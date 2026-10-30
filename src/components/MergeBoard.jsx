@@ -1245,16 +1245,16 @@ export function MergeBoard({
         className={`merge-grid-board ${isShaking ? 'board-screen-shake' : ''}`}
         style={{
           width: '940px',
-          height: '350px',
+          height: '295px',
           background: 'linear-gradient(180deg, #FCF2E3 0%, #F5E5D0 100%)',
           border: '3.5px solid #8B5A2B',
           borderRadius: '20px',
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.28), inset 0 2px 4px rgba(255, 255, 255, 0.8)',
-          padding: '10px',
+          padding: '8px',
           display: 'grid',
           gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
           gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`,
-          gap: '6px',
+          gap: '5px',
           position: 'relative',
           touchAction: 'none'
         }}

@@ -353,6 +353,77 @@ export function Header({
             <Maximize2 size={12} />
           </button>
 
+          {/* Quick Direct Button: Kado Harian */}
+          <button
+            onClick={() => {
+              audio.playPop();
+              if (onOpenDailyGift) onOpenDailyGift();
+            }}
+            className="mockup-action-btn"
+            style={{
+              background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+              border: '1.5px solid #047857',
+              borderRadius: '12px',
+              padding: '2px 8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#FFF',
+              fontSize: '11px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              boxShadow: '0 2px 5px rgba(5, 150, 105, 0.4)',
+              position: 'relative',
+              animation: canClaimDaily ? 'pulseReady 1.6s infinite' : 'none'
+            }}
+            aria-label="Kado Harian"
+            title="Klaim Kado Harian Koin & Energi Gratis"
+          >
+            <span>🎁</span>
+            <span>Kado</span>
+            {canClaimDaily && (
+              <span style={{
+                position: 'absolute',
+                top: '-3px',
+                right: '-3px',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#EF4444',
+                border: '1.5px solid #FFF',
+                boxShadow: '0 0 6px #EF4444'
+              }} />
+            )}
+          </button>
+
+          {/* Quick Direct Button: Roda Rezeki */}
+          <button
+            onClick={() => {
+              audio.playPop();
+              if (onOpenLuckyWheel) onOpenLuckyWheel();
+            }}
+            className="mockup-action-btn"
+            style={{
+              background: 'linear-gradient(180deg, #38BDF8 0%, #0284C7 100%)',
+              border: '1.5px solid #0369A1',
+              borderRadius: '12px',
+              padding: '2px 8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              color: '#FFF',
+              fontSize: '11px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              boxShadow: '0 2px 5px rgba(2, 132, 199, 0.4)'
+            }}
+            aria-label="Roda Rezeki"
+            title="Putar Roda Rezeki Harian"
+          >
+            <span>🎡</span>
+            <span>Roda</span>
+          </button>
+
           {/* Consolidated Activity Center Drawer Button */}
           <button
             onClick={() => {
@@ -380,19 +451,6 @@ export function Header({
           >
             <span>📋</span>
             <span>Aktivitas</span>
-            {canClaimDaily && (
-              <span style={{
-                position: 'absolute',
-                top: '-3px',
-                right: '-3px',
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: '#EF4444',
-                border: '1.5px solid #FFF',
-                boxShadow: '0 0 6px #EF4444'
-              }} />
-            )}
           </button>
 
           {/* Battery Icon & Percentage */}

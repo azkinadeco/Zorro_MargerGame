@@ -298,18 +298,35 @@ export function StoryQuestBanner({
             <span>Klaim Hadiah (+{activeQuest.rewardCoins} 🪙)!</span>
           </button>
         ) : (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            fontSize: '10.5px',
-            fontWeight: '800',
-            color: '#92400E'
-          }}>
-            <span>Hadiah:</span>
-            <span style={{ fontWeight: '900', color: '#D97706' }}>+{activeQuest.rewardCoins} 🪙</span>
-            <span style={{ fontWeight: '900', color: '#0284C7' }}>+{activeQuest.rewardEnergy} ⚡</span>
-          </div>
+          <button
+            onClick={() => {
+              audio.playPop();
+              if (activeQuest.type === 'bake' && onNavigate) onNavigate('bake');
+              else if (activeQuest.type === 'decor' && onNavigate) onNavigate('lobby');
+              else if (activeQuest.type === 'pet' && onNavigate) onNavigate('cats');
+              else if (activeQuest.type === 'map' && onNavigate) onNavigate('map');
+              else if (activeQuest.type === 'wardrobe' && onNavigate) onNavigate('cats');
+              else if (onShowToast) onShowToast(`Misi Babak ${activeQuest.chapter}: ${activeQuest.desc} (Progres: ${Math.min(activeQuest.target, progress)}/${activeQuest.target})`);
+            }}
+            className="mockup-action-btn"
+            style={{
+              background: 'linear-gradient(180deg, #FFF7ED 0%, #FED7AA 100%)',
+              border: '1.5px solid #EA580C',
+              borderRadius: '14px',
+              padding: '4px 12px',
+              color: '#7C2D12',
+              fontSize: '11px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            title="Ketuk untuk langsung membuka lokasi misi ini"
+          >
+            <span>🎯</span>
+            <span>Misi (+{activeQuest.rewardCoins} 🪙 +{activeQuest.rewardEnergy} ⚡)</span>
+          </button>
         )}
       </div>
     </div>

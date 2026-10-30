@@ -733,10 +733,14 @@ export default function App() {
   // Serve completed customer order (supports Rush Hour 2x multiplier, Multi-Item Combos, and VIP Gems)
   const handleServeOrder = (order, multiplier = 1) => {
     if (!order || !order.items || order.items.length === 0) return;
-    // Remove the served active items from the board (never consume cobweb or bubble items)
+    // Remove the served active items from the board or backpack (never consume cobweb or bubble items)
     const newBoard = [...board];
+    const newBackpack = [...backpack];
+    let backpackChanged = false;
+
     order.items.forEach(req => {
       let remaining = req.count || 1;
+      // 1. Consume from board
       for (let i = 0; i < newBoard.length; i++) {
         const cell = newBoard[i];
         if (!cell || cell.isCobweb || cell.isBubble) continue;
@@ -750,8 +754,29 @@ export default function App() {
           if (remaining <= 0) break;
         }
       }
+      // 2. Consume from backpack if needed
+      if (remaining > 0) {
+        for (let bIdx = 0; bIdx < newBackpack.length; bIdx++) {
+          const item = newBackpack[bIdx];
+          if (!item) continue;
+          if (
+            item.id === req.itemId ||
+            item.itemData?.id === req.itemId ||
+            (item.uid && item.uid.startsWith(req.itemId))
+          ) {
+            newBackpack[bIdx] = null;
+            backpackChanged = true;
+            remaining--;
+            if (remaining <= 0) break;
+          }
+        }
+      }
     });
+
     setBoard(newBoard);
+    if (backpackChanged) {
+      setBackpack(newBackpack);
+    }
 
     // Award rewards with multiplier, VIP gems, and scaled star progression
     const coinReward = (order.rewardCoins || 250) * multiplier;
@@ -1088,15 +1113,20 @@ export default function App() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '6px 0 10px 0'
+              justifyContent: 'flex-start',
+              padding: '2px 0 4px 0',
+              gap: '4px',
+              overflowY: 'auto',
+              overflowX: 'hidden'
             }}>
               {/* Floating Orders Card Top-Center */}
               <OrderTray
                 orders={orders}
                 boardItems={board}
+                backpack={backpack}
                 onServeOrder={handleServeOrder}
                 onItemHint={handleItemHint}
+                onShowToast={showToast}
               />
 
               {/* Pinned Story Quest Banner (P1 Core Progression Loop) */}
@@ -1123,6 +1153,128 @@ export default function App() {
                 onShowToast={showToast}
                 onNavigate={(v) => setCurrentView(v)}
               />
+
+              {/* Quick Access Floating Feature Bar on Right */}
+              <div style={{
+                position: 'absolute',
+                right: '12px',
+                top: '58px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+                zIndex: 35
+              }}>
+                <button
+                  onClick={() => { audio.playPop(); setShowDailyModal(true); }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #FEF3C7 0%, #F59E0B 100%)',
+                    border: '2px solid #FFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    position: 'relative'
+                  }}
+                  title="Kado Hadiah Harian"
+                >
+                  <span style={{ fontSize: '18px' }}>🎁</span>
+                  <span style={{ fontSize: '7.5px', fontWeight: '900', color: '#78350F', marginTop: '-2px' }}>Kado</span>
+                </button>
+
+                <button
+                  onClick={() => { audio.playPop(); setShowLuckyWheelModal(true); }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #E0F2FE 0%, #0284C7 100%)',
+                    border: '2px solid #FFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                  title="Roda Rezeki"
+                >
+                  <span style={{ fontSize: '18px' }}>🎡</span>
+                  <span style={{ fontSize: '7.5px', fontWeight: '900', color: '#075985', marginTop: '-2px' }}>Roda</span>
+                </button>
+
+                <button
+                  onClick={() => { audio.playPop(); setShowCatPassModal(true); }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #F3E8FF 0%, #9333EA 100%)',
+                    border: '2px solid #FFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                  title="Cat Pass & Misi"
+                >
+                  <span style={{ fontSize: '18px' }}>🐾</span>
+                  <span style={{ fontSize: '7.5px', fontWeight: '900', color: '#581C87', marginTop: '-2px' }}>Pass</span>
+                </button>
+
+                <button
+                  onClick={() => { audio.playPop(); setShowEventModal(true); }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #FFE4E6 0%, #E11D48 100%)',
+                    border: '2px solid #FFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                  title="Festival Kafe"
+                >
+                  <span style={{ fontSize: '18px' }}>🎂</span>
+                  <span style={{ fontSize: '7.5px', fontWeight: '900', color: '#881337', marginTop: '-2px' }}>Event</span>
+                </button>
+
+                <button
+                  onClick={() => { audio.playPop(); setShowLevelRoadModal(true); }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #DCFCE7 0%, #16A34A 100%)',
+                    border: '2px solid #FFF',
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer'
+                  }}
+                  title="Level Road & Hadiah"
+                >
+                  <span style={{ fontSize: '18px' }}>🏆</span>
+                  <span style={{ fontSize: '7.5px', fontWeight: '900', color: '#14532D', marginTop: '-2px' }}>Level</span>
+                </button>
+              </div>
 
               {/* Interactive Nina & Zorro Gameplay Mascot Companion */}
               <NinaCompanion

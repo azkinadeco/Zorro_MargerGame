@@ -7,8 +7,10 @@ import { Semi3DItemToken } from './Semi3DItemToken';
 export function OrderTray({
   orders = [],
   boardItems = [],
+  backpack = [],
   onServeOrder,
-  onItemHint
+  onItemHint,
+  onShowToast
 }) {
   const [currentOrderIndex, setCurrentOrderIndex] = useState(0);
   const [servedFlight, setServedFlight] = useState(false);
@@ -55,15 +57,23 @@ export function OrderTray({
   // Make sure currentOrderIndex is valid
   const activeOrder = orders[currentOrderIndex % orders.length] || orders[0];
 
-  // Helper to count how many of target item are currently active (not cobweb/bubble) on the board
+  // Helper to count how many of target item are currently active (not cobweb/bubble) on the board or in backpack
   const countItemOnBoard = (targetId) => {
-    return boardItems.filter(
+    const onBoard = boardItems.filter(
       item =>
         item &&
         !item.isCobweb &&
         !item.isBubble &&
-        (item.id === targetId || item.itemData?.id === targetId || item.uid?.startsWith(targetId))
+        (item.id === targetId || item.itemData?.id === targetId || (item.uid && item.uid.startsWith(targetId)))
     ).length;
+    const inBag = (backpack || []).filter(
+      item =>
+        item &&
+        !item.isCobweb &&
+        !item.isBubble &&
+        (item.id === targetId || item.itemData?.id === targetId || (item.uid && item.uid.startsWith(targetId)))
+    ).length;
+    return onBoard + inBag;
   };
 
   // Check if active order is ready to serve
@@ -79,7 +89,7 @@ export function OrderTray({
         setCurrentOrderIndex(readyIdx);
       }
     }
-  }, [boardItems, orders]);
+  }, [boardItems, backpack, orders, currentOrderIndex]);
 
   const reqItem = activeOrder?.items?.[0];
 
@@ -549,7 +559,7 @@ export function OrderTray({
           </div>
         </div>
 
-        {/* Action Button: SERVE (Ready) or HINT */}
+        {/* Action Button: SERVE (Ready) or NOT READY (Informative Hint) */}
         <div>
           {isReady ? (
             <button
@@ -557,11 +567,11 @@ export function OrderTray({
               onClick={handleServe}
               className="mockup-action-btn shimmer-badge order-ready-pulse"
               style={{
-                background: 'linear-gradient(180deg, #34D399 0%, #059669 100%)',
+                background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
                 border: '2.5px solid #047857',
                 borderBottom: '4px solid #064E3B',
                 borderRadius: '16px',
-                padding: '8px 22px',
+                padding: '8px 20px',
                 color: '#FFFFFF',
                 fontSize: '13px',
                 fontWeight: '900',
@@ -569,7 +579,7 @@ export function OrderTray({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.5), inset 0 2px 2px rgba(255,255,255,0.7)',
+                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.55), inset 0 2px 2px rgba(255,255,255,0.7)',
                 position: 'relative',
                 overflow: 'hidden',
                 zIndex: 60,
@@ -578,15 +588,24 @@ export function OrderTray({
                 userSelect: 'none'
               }}
             >
-              <Check size={16} strokeWidth={3} />
-              <span>KIRIM</span>
+              <Check size={17} strokeWidth={3} />
+              <span>KIRIM SELESAI</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                if (onItemHint && reqItem?.itemId) onItemHint(reqItem.itemId);
+                audio.playPop();
+                const missing = (activeOrder.items || []).find(r => countItemOnBoard(r.itemId) < (r.count || 1));
+                const missingDef = missing ? (ITEMS[missing.itemId] || getItemDetails(missing.itemId)) : null;
+                const missingName = missingDef?.nameId || missingDef?.name || 'item';
+                if (onShowToast) {
+                  onShowToast(`Pesanan belum lengkap! Butuh ${missingName}. Gabungkan item di papan untuk membuatnya! 🐾`);
+                }
+                if (onItemHint && missing?.itemId) {
+                  onItemHint(missing.itemId);
+                }
               }}
               className="mockup-action-btn"
               style={{
@@ -602,10 +621,15 @@ export function OrderTray({
                 boxShadow: '0 2px 5px rgba(234, 88, 12, 0.35)',
                 zIndex: 60,
                 pointerEvents: 'auto',
-                touchAction: 'manipulation'
+                touchAction: 'manipulation',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
               }}
+              title="Ketuk untuk melihat item yang dibutuhkan"
             >
-              Cari Item
+              <span>🔍</span>
+              <span>Cari Item</span>
             </button>
           )}
         </div>

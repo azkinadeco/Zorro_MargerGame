@@ -248,16 +248,47 @@ export function DailyLoginModal({
               <span>Klaim Hadiah Hari {currentDay} Sekarang! ✨</span>
             </button>
           ) : (
-            <div style={{
-              textAlign: 'center',
-              padding: '12px',
-              background: '#F1F5F9',
-              borderRadius: '16px',
-              fontSize: '13px',
-              fontWeight: '800',
-              color: '#64748B'
-            }}>
-              Sudah diklaim hari ini! Mainkan pesanan cafe & kembali lagi besok 🐾
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+              <div style={{
+                textAlign: 'center',
+                padding: '8px',
+                background: '#ECFDF5',
+                border: '1.5px solid #A7F3D0',
+                borderRadius: '14px',
+                fontSize: '12px',
+                fontWeight: '800',
+                color: '#065F46'
+              }}>
+                ✅ Hadiah Hari {currentDay} telah diklaim! Mau klaim bonus harian tambahan?
+              </div>
+              <button
+                onClick={() => {
+                  const nextD = (currentDay % 7) + 1;
+                  setCurrentDay(nextD);
+                  const nextReward = DAILY_REWARDS[nextD - 1];
+                  handleClaim(nextReward);
+                }}
+                className="mockup-action-btn"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: 'linear-gradient(180deg, #F59E0B 0%, #D97706 100%)',
+                  border: '2.5px solid #B45309',
+                  borderRadius: '16px',
+                  color: '#FFFFFF',
+                  fontSize: '14px',
+                  fontWeight: '900',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(217, 119, 6, 0.4)'
+                }}
+              >
+                <Sparkles size={18} />
+                <span>Klaim Hadiah Hari Berikutnya (Hari {(currentDay % 7) + 1}) 🚀</span>
+              </button>
             </div>
           )}
         </div>
