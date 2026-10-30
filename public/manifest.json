@@ -1,0 +1,17 @@
+{
+  "short_name": "ZorroMerge",
+  "name": "Zorro Merge Cats - Cozy Cat Cafe",
+  "icons": [
+    {
+      "src": "/photos/zorro_kitten_paws.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3B1E08",
+  "theme_color": "#7C4A26",
+  "display": "standalone",
+  "orientation": "landscape"
+}
