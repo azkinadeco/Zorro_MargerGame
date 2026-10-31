@@ -1,7 +1,17 @@
 {
   "short_name": "ZorroMerge",
-  "name": "Zorro Merge Cats - Cozy Cat Cafe",
+  "name": "Zorro Merger Game - Game for Merge Cats",
   "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    },
     {
       "src": "/photos/zorro_kitten_paws.png",
       "type": "image/png",

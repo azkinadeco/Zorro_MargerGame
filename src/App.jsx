@@ -1952,17 +1952,26 @@ export default function App() {
           }}>
             <div style={{
               width: '72px',
-              height: '72px',
-              borderRadius: '20px',
+              height: '84px',
+              borderRadius: '24px',
               background: '#FEF3C7',
               border: '2.5px solid #F59E0B',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '36px',
+              padding: '6px',
               boxShadow: '0 6px 14px rgba(245, 158, 11, 0.3)'
             }}>
-              🐱
+              <img
+                src="/logo.png"
+                alt="Zorro Merger Game"
+                style={{
+                  height: '100%',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                }}
+              />
             </div>
 
             <div>
@@ -1970,7 +1979,7 @@ export default function App() {
                 Mode Layar Lanskap 🐾
               </div>
               <div style={{ fontSize: '13px', fontWeight: '700', color: '#78350F', lineHeight: '1.4' }}>
-                Zorro Merge Cats didesain dalam format horizontal 16:9 agar leluasa dan seru dimainkan!
+                Zorro Merger Game didesain dalam format horizontal 16:9 agar leluasa dan seru dimainkan!
               </div>
             </div>
 

@@ -164,87 +164,35 @@ function HeaderEnergyIcon() {
 
 function HeaderLogo() {
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '56px',
-      position: 'relative',
-      userSelect: 'none'
-    }}>
-      <div style={{
-        background: 'linear-gradient(180deg, #FFFDF8 0%, #FAEDD9 100%)',
-        border: '2.5px solid #8B5A2B',
-        borderRadius: '20px',
-        padding: '3px 18px',
-        boxShadow: '0 3px 8px rgba(0,0,0,0.22), inset 0 2px 2px rgba(255,255,255,0.9)',
+    <div
+      style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        position: 'relative'
-      }}>
-        {/* Cat Ears on Logo Top */}
-        <div style={{
-          position: 'absolute',
-          top: '-8px',
-          left: '12px',
-          width: '12px',
-          height: '10px',
-          background: '#FAEDD9',
-          borderTop: '2.5px solid #8B5A2B',
-          borderLeft: '2.5px solid #8B5A2B',
-          transform: 'rotate(-25deg)',
-          borderTopLeftRadius: '4px'
-        }} />
-        <div style={{
-          position: 'absolute',
-          top: '-8px',
-          right: '12px',
-          width: '12px',
-          height: '10px',
-          background: '#FAEDD9',
-          borderTop: '2.5px solid #8B5A2B',
-          borderRight: '2.5px solid #8B5A2B',
-          transform: 'rotate(25deg)',
-          borderTopRightRadius: '4px'
-        }} />
-
-        {/* Top Text: ZORRO */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
-        }}>
-          <span style={{ fontSize: '11px' }}>🐾</span>
-          <span style={{
-            fontFamily: "'Sniglet', 'Nunito', sans-serif",
-            fontSize: '16px',
-            fontWeight: '900',
-            background: 'linear-gradient(180deg, #F97316 0%, #EA580C 50%, #C2410C 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '0.8px',
-            lineHeight: '1.1',
-            textShadow: '0 1px 2px rgba(0,0,0,0.1)'
-          }}>
-            ZORRO
-          </span>
-          <span style={{ fontSize: '11px' }}>🐾</span>
-        </div>
-
-        {/* Bottom Text: MERGE CATS */}
-        <span style={{
-          fontFamily: "'Nunito', sans-serif",
-          fontSize: '10px',
-          fontWeight: '900',
-          color: '#5C3818',
-          letterSpacing: '1.2px',
-          lineHeight: '1',
-          textTransform: 'uppercase'
-        }}>
-          MERGE CATS
-        </span>
-      </div>
+        justifyContent: 'center',
+        height: '56px',
+        position: 'relative',
+        userSelect: 'none',
+        cursor: 'pointer',
+        transition: 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)'
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.06) translateY(-1px)')}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.0) translateY(0)')}
+      onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.95)')}
+      onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1.06) translateY(-1px)')}
+      title="Zorro Merger Game - Game for Merge Cats 🐾"
+    >
+      <img
+        src="/logo.png"
+        alt="Zorro Merger Game"
+        style={{
+          height: '56px',
+          width: 'auto',
+          maxHeight: '100%',
+          objectFit: 'contain',
+          filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.32)) drop-shadow(0 1px 2px rgba(255,255,255,0.3))',
+          pointerEvents: 'none'
+        }}
+      />
     </div>
   );
 }

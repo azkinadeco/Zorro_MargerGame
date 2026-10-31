@@ -104,13 +104,17 @@ export function SettingsModal({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontSize: '22px' }}>⚙️</span>
+            <img
+              src="/logo.png"
+              alt="Logo"
+              style={{ height: '38px', width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' }}
+            />
             <div>
               <div style={{ fontSize: '16px', fontWeight: '900', color: '#3B1E08' }}>
                 Pengaturan Game
               </div>
               <div style={{ fontSize: '11px', fontWeight: '700', color: '#8A5833' }}>
-                Zorro Merge Cats 🐾 (Landscape Ready)
+                Zorro Merger Game 🐾 (Landscape Ready)
               </div>
             </div>
           </div>
