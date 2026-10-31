@@ -116,44 +116,41 @@ export default function App() {
     }
   });
 
-  // Core Game Resources: Level 1 Starter for new players, Level 18 for Sandbox
+  // Core Game Resources: Full Game Unlocked (Lv.10+, 99.999 Coins, 999 Gems, 100 Energy)
   const [level, setLevel] = useState(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_level`);
-      if (saved) return parseInt(saved, 10);
-      const isSandbox = localStorage.getItem(`${STORAGE_KEY}_sandbox_mode`) === 'true';
-      return isSandbox ? 18 : 1;
+      const val = saved ? parseInt(saved, 10) : 10;
+      return Math.max(10, isNaN(val) ? 10 : val);
     } catch (e) {
-      return 1;
+      return 10;
     }
   });
 
   const [coins, setCoins] = useState(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_coins`);
-      if (saved) return parseInt(saved, 10);
-      const isSandbox = localStorage.getItem(`${STORAGE_KEY}_sandbox_mode`) === 'true';
-      return isSandbox ? 14350 : 50;
+      const val = saved ? parseInt(saved, 10) : 99999;
+      return Math.max(99999, isNaN(val) ? 99999 : val);
     } catch (e) {
-      return 50;
+      return 99999;
     }
   });
 
   const [gems, setGems] = useState(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_gems`);
-      if (saved) return parseInt(saved, 10);
-      const isSandbox = localStorage.getItem(`${STORAGE_KEY}_sandbox_mode`) === 'true';
-      return isSandbox ? 210 : 25;
+      const val = saved ? parseInt(saved, 10) : 999;
+      return Math.max(999, isNaN(val) ? 999 : val);
     } catch (e) {
-      return 25;
+      return 999;
     }
   });
 
   const [energy, setEnergy] = useState(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_energy`);
-      return saved ? parseInt(saved, 10) : 100;
+      return saved ? Math.max(100, parseInt(saved, 10)) : 100;
     } catch (e) {
       return 100;
     }
@@ -439,27 +436,51 @@ export default function App() {
     } catch (e) { return { zorro: 'zorro_default' }; }
   });
 
+  const ALL_OUTFIT_IDS = [
+    'zorro_default', 'zorro_mask', 'zorro_crown', 'zorro_chef', 'zorro_bowtie',
+    'thor_default', 'thor_ribbon', 'thor_sailor', 'thor_bell',
+    'loki_default', 'loki_sunglasses', 'loki_flower', 'loki_scarf'
+  ];
+
   const [unlockedWardrobeOutfits, setUnlockedWardrobeOutfits] = useState(() => {
     try {
       const saved = localStorage.getItem(`${STORAGE_KEY}_unlocked_wardrobe`);
-      return saved ? JSON.parse(saved) : ['zorro_default', 'thor_default', 'loki_default'];
-    } catch (e) { return ['zorro_default', 'thor_default', 'loki_default']; }
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.from(new Set([...ALL_OUTFIT_IDS, ...parsed]));
+    } catch (e) { return ALL_OUTFIT_IDS; }
   });
 
-  // Discovery / Catalog items
+  // Discovery / Catalog items (Full Encyclopedia unlocked)
   const [discoveredItemIds, setDiscoveredItemIds] = useState(() => {
     try {
+      const allItemKeys = Object.keys(ITEMS);
       const saved = localStorage.getItem(`${STORAGE_KEY}_discovered`);
-      return saved ? JSON.parse(saved) : [
-        'food_1', 'food_2', 'food_3',
-        'toys_1', 'toys_2', 'toys_3',
-        'cats_1', 'cats_2', 'cats_3', 'cats_4', 'cats_5',
-        'energy_1', 'energy_2', 'care_1', 'care_2'
-      ];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.from(new Set([...allItemKeys, ...parsed]));
     } catch (e) {
-      return ['food_1', 'food_2', 'toys_1', 'toys_2', 'cats_1', 'cats_2', 'cats_3', 'cats_4', 'cats_5'];
+      return Object.keys(ITEMS);
     }
   });
+
+  // Full Game Auto-Unlock for recipes, maps, photos, and friendship
+  useEffect(() => {
+    try {
+      localStorage.setItem(`${STORAGE_KEY}_level`, Math.max(10, level).toString());
+      localStorage.setItem(`${STORAGE_KEY}_coins`, Math.max(99999, coins).toString());
+      localStorage.setItem(`${STORAGE_KEY}_gems`, Math.max(999, gems).toString());
+      localStorage.setItem(`${STORAGE_KEY}_energy`, '100');
+      localStorage.setItem('zorro_unlocked_recipes', JSON.stringify(['meowffins', 'croissant', 'waffle', 'tuxedo_tart', 'catnip_cake']));
+      localStorage.setItem('zorro_recipe_mastery', JSON.stringify({ meowffins: 5, croissant: 5, waffle: 5, tuxedo_tart: 5, catnip_cake: 5 }));
+      localStorage.setItem('zorro_map_unlocked', JSON.stringify(['cafe', 'market', 'park', 'plaza', 'forest', 'lake', 'castle']));
+      localStorage.setItem('zorro_unlocked_photos', JSON.stringify(['memory_1', 'memory_thor', 'memory_loki', 'memory_zorro_door', 'memory_zorro_yard', 'memory_2', 'memory_3', 'memory_4', 'memory_6']));
+      localStorage.setItem('zorro_claimed_level_road', JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+      localStorage.setItem('zorro_cat_friendship', JSON.stringify({
+        zorro: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] },
+        thor: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] },
+        loki: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] }
+      }));
+    } catch (e) {}
+  }, []);
 
   // Cat Pass & Quests
   const [pawPoints, setPawPoints] = useState(() => {

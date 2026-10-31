@@ -28,11 +28,8 @@ export function CatalogModal({ discoveredItemIds = [], onAddGems, onShowToast, o
     { id: ITEM_CATEGORIES.SPECIAL, label: 'Booster Ajaib', icon: '🪄' },
   ];
 
-  // Auto-treat on-board generators as discovered if player has them
-  const isItemDiscovered = (itemId) => {
-    if (['gen_basket', 'gen_box', 'food_1', 'cats_1', 'toys_1'].includes(itemId)) return true;
-    return discoveredItemIds.includes(itemId);
-  };
+  // Full Encyclopedia: All item recipes visible
+  const isItemDiscovered = () => true;
 
   const handleClaimCatBonus = (catId, catLabel) => {
     if (claimedCatRewards.includes(catId)) return;

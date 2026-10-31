@@ -163,6 +163,13 @@ export function DailyLoginModal({
               return (
                 <div
                   key={item.day}
+                  onClick={() => {
+                    if (!isClaimed) {
+                      setCurrentDay(item.day);
+                      handleClaim(item);
+                    }
+                  }}
+                  className={isClaimed ? '' : 'mockup-action-btn'}
                   style={{
                     padding: '12px 8px',
                     borderRadius: '18px',
@@ -185,7 +192,8 @@ export function DailyLoginModal({
                     minHeight: '130px',
                     textAlign: 'center',
                     boxShadow: isToday ? '0 4px 14px rgba(245, 158, 11, 0.35)' : '0 2px 4px rgba(0,0,0,0.05)',
-                    position: 'relative'
+                    position: 'relative',
+                    cursor: isClaimed ? 'default' : 'pointer'
                   }}
                 >
                   <span style={{ fontSize: '11px', fontWeight: '900', color: isToday ? '#B45309' : '#8A5833' }}>

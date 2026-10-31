@@ -89,7 +89,7 @@ export function CookingRoomView({
       whiskTarget: 4
     },
     croissant: {
-      reqLevel: 2,
+      reqLevel: 1,
       name: "Level 2: Cat's Paw Croissant",
       title: "Paw Croissant",
       desc: 'Croissant renyah berlapis mentega keemasan berbentuk tapak kaki kucing.',
@@ -100,7 +100,7 @@ export function CookingRoomView({
       whiskTarget: 6
     },
     waffle: {
-      reqLevel: 3,
+      reqLevel: 1,
       name: 'Level 3: Honey Paw Waffle',
       title: 'Honey Paw Waffle',
       desc: 'Waffle renyah madu dengan cetakan muka anabul imut.',
@@ -111,7 +111,7 @@ export function CookingRoomView({
       whiskTarget: 6
     },
     tuxedo_tart: {
-      reqLevel: 4,
+      reqLevel: 1,
       name: 'Level 4: Tuxedo Dark Tart',
       title: 'Tuxedo Dark Tart',
       desc: 'Tart keju krim cokelat hitam mewah resep eksklusif Zorro.',
@@ -122,7 +122,7 @@ export function CookingRoomView({
       whiskTarget: 8
     },
     catnip_cake: {
-      reqLevel: 5,
+      reqLevel: 1,
       name: 'Level 5: Royal Catnip Shortcake',
       title: 'Catnip Shortcake',
       desc: 'Kue bolu stroberi catnip istana dengan krim manis lembut.',
@@ -185,10 +185,18 @@ export function CookingRoomView({
         setBakingState('done');
         audio.playFanfare();
         confetti({ particleCount: 40, spread: 70, origin: { x: 0.75, y: 0.5 } });
-      }, 2000);
+      }, 1500);
     } else {
       setBakingState('whisking');
     }
+  };
+
+  const handleInstantBake = () => {
+    audio.playFanfare();
+    confetti({ particleCount: 50, spread: 80, origin: { x: 0.75, y: 0.5 } });
+    setWhiskCount(currentRecipe.whiskTarget);
+    setBakingState('done');
+    if (onShowToast) onShowToast(`⚡ Kilat! ${currentRecipe.title} selesai dipanggang sempurna! 🧁`);
   };
 
   const handleCollect = () => {
@@ -765,29 +773,55 @@ export function CookingRoomView({
                   <span>🔓 Buka Resep Ini Sekarang</span>
                 </button>
               ) : (
+              <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
                 <button
                   onClick={handleWhisk}
                   className="mockup-action-btn"
                   style={{
-                    width: '100%',
+                    flex: 1,
                     background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
                     border: '2.5px solid #9A3412',
                     borderRadius: '14px',
-                    padding: '9px 16px',
+                    padding: '9px 12px',
                     color: '#FFFFFF',
-                    fontSize: '12.5px',
+                    fontSize: '12px',
                     fontWeight: '900',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     boxShadow: '0 4px 10px rgba(234, 88, 12, 0.4)'
                   }}
                 >
                   <Utensils size={15} className={isWhisking ? 'whisk-spin-active' : ''} />
-                  <span>Mulai Kocok Adonan (-{currentRecipe.energyCost || 5} ⚡)</span>
+                  <span>Kocok Adonan (-{currentRecipe.energyCost || 5} ⚡)</span>
                 </button>
+
+                <button
+                  onClick={handleInstantBake}
+                  className="mockup-action-btn shimmer-badge"
+                  style={{
+                    background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+                    border: '2.5px solid #047857',
+                    borderRadius: '14px',
+                    padding: '9px 14px',
+                    color: '#FFFFFF',
+                    fontSize: '12px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 4px 10px rgba(5, 150, 105, 0.4)'
+                  }}
+                  title="Panggang instan tanpa kocok adonan"
+                >
+                  <Sparkles size={15} />
+                  <span>⚡ Panggang Kilat</span>
+                </button>
+              </div>
               )}
 
               {energy < (currentRecipe.energyCost || 5) && onAddEnergy && (

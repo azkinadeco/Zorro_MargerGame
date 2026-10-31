@@ -201,11 +201,11 @@ export function GuestbookModal({
                   <Gift size={14} color="#EA580C" />
                   <span>Hadiah Tingkat Reputasi</span>
                 </div>
-                {CAFE_TIERS.some(t => totalOrdersServed >= t.requiredOrders && !claimedTiers.includes(t.level)) && (
+                {CAFE_TIERS.some(t => !claimedTiers.includes(t.level)) && (
                   <button
                     onClick={() => {
                       audio.playFanfare();
-                      CAFE_TIERS.filter(t => totalOrdersServed >= t.requiredOrders && !claimedTiers.includes(t.level))
+                      CAFE_TIERS.filter(t => !claimedTiers.includes(t.level))
                         .forEach(t => onClaimTier(t));
                     }}
                     className="cozy-btn"
@@ -281,9 +281,23 @@ export function GuestbookModal({
                           Buka 🎁
                         </button>
                       ) : (
-                        <div style={{ fontSize: '10.5px', fontWeight: '800', color: '#94A3B8' }}>
-                          {totalOrdersServed}/{tier.requiredOrders} order
-                        </div>
+                        <button
+                          onClick={() => onClaimTier(tier)}
+                          className="cozy-btn"
+                          style={{
+                            padding: '4px 10px',
+                            background: 'linear-gradient(135deg, #FDE047 0%, #EAB308 100%)',
+                            color: '#713F12',
+                            fontSize: '10.5px',
+                            fontWeight: '900',
+                            borderRadius: '10px',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                          title="Buka hadiah reputasi kafe ini seketika"
+                        >
+                          ⚡ Buka 🎁
+                        </button>
                       )}
                     </div>
                   </div>

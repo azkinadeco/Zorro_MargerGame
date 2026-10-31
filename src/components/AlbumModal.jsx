@@ -13,7 +13,7 @@ export function AlbumModal({ totalStarsEarned, onClose }) {
     }
   });
 
-  const isPhotoUnlocked = (item) => totalStarsEarned >= item.unlockStars || unlockedPhotos.includes(item.id);
+  const isPhotoUnlocked = () => true;
 
   // Default to first unlocked photo or first photo
   const firstUnlocked = ZORRO_ALBUM.find(item => isPhotoUnlocked(item)) || ZORRO_ALBUM[0];

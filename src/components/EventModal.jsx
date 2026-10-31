@@ -289,9 +289,23 @@ export function EventModal({
                           Buka 🎁
                         </button>
                       ) : (
-                        <div style={{ fontSize: '10.5px', fontWeight: '800', color: '#94A3B8' }}>
-                          {eventPoints}/{tier.requiredPoints}
-                        </div>
+                        <button
+                          onClick={() => handleClaim(tier)}
+                          className="cozy-btn"
+                          style={{
+                            padding: '5px 11px',
+                            background: 'linear-gradient(135deg, #FDE047 0%, #EAB308 100%)',
+                            color: '#713F12',
+                            borderRadius: '10px',
+                            fontSize: '10.5px',
+                            fontWeight: '900',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                          title="Buka hadiah tier festival ini langsung"
+                        >
+                          ⚡ Buka 🎁
+                        </button>
                       )}
                     </div>
                   </div>

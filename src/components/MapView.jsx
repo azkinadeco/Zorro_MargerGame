@@ -111,7 +111,7 @@ export function MapView({
       desc: 'Tempat bertukar bahan baku kue, membeli catnip segar, dan mendapatkan diskon peralatan kucing.',
       reward: '🪙 +300 Koin & +10 ⚡',
       btnText: 'Klaim Hadiah Pasar',
-      reqLevel: 2,
+      reqLevel: 1,
       action: () => {
         if (onAddCoins) onAddCoins(300);
         if (onAddEnergy) onAddEnergy(10);
@@ -128,7 +128,7 @@ export function MapView({
       desc: 'Taman hijau asri tempat anak kucing berkejaran dan memanjat pohon pastel.',
       reward: '💎 +20 Permata Hijau',
       btnText: 'Main di Taman',
-      reqLevel: 3,
+      reqLevel: 1,
       action: () => {
         if (onAddGems) onAddGems(20);
         confetti({ particleCount: 35, spread: 60, origin: { y: 0.6 } });
@@ -144,7 +144,7 @@ export function MapView({
       desc: 'Alun-alun megah dengan lingkaran paw batu raksasa tempat bertemunya kucing dari seluruh penjuru!',
       reward: '🪙 +450 Koin & +15 ⚡',
       btnText: 'Ikuti Festival',
-      reqLevel: 4,
+      reqLevel: 1,
       action: () => {
         if (onAddCoins) onAddCoins(450);
         if (onAddEnergy) onAddEnergy(15);
@@ -164,7 +164,7 @@ export function MapView({
       desc: 'Hutan lebat misterius tempat tumbuhnya catnip alami kualitas terbaik di kerajaan kucing!',
       reward: '🪙 +350 Koin & +20 ⚡',
       btnText: 'Panen Catnip',
-      reqLevel: 5,
+      reqLevel: 1,
       action: () => {
         if (onAddCoins) onAddCoins(350);
         if (onAddEnergy) onAddEnergy(20);
@@ -181,7 +181,7 @@ export function MapView({
       desc: 'Danau jernih tempat ikan salmon melompat riang. Makanan favorit anak kucing cafe!',
       reward: '🪙 +500 Koin & +25 ⚡',
       btnText: 'Memancing Bersama Nina',
-      reqLevel: 6,
+      reqLevel: 1,
       action: () => {
         if (onAddCoins) onAddCoins(500);
         if (onAddEnergy) onAddEnergy(25);
@@ -198,7 +198,7 @@ export function MapView({
       desc: 'Kastil megah bermahkota emas tempat mahkota tuxedo Zorro disimpan.',
       reward: '💎 +60 Permata Mewah',
       btnText: 'Masuk ke Kastil',
-      reqLevel: 8,
+      reqLevel: 1,
       action: () => {
         if (onAddGems) onAddGems(60);
         confetti({ particleCount: 50, spread: 80, origin: { y: 0.6 } });
@@ -373,18 +373,42 @@ export function MapView({
           >
             🧭 Petualangan
           </button>
+
+          <button
+            onClick={() => {
+              audio.playFanfare();
+              confetti({ particleCount: 70, spread: 85, origin: { y: 0.6 } });
+              allNodes.forEach(node => {
+                if (node.action && node.id !== 'cafe') {
+                  node.action();
+                }
+              });
+              setClaimedNodes(allNodes.map(n => n.id));
+              if (onShowToast) onShowToast("✨ Semua wilayah sukses dijelajahi! Hadiah koin, energi & permata melimpah! 🗺️🎉");
+            }}
+            className="mockup-action-btn shimmer-badge"
+            style={{
+              background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+              color: '#FFF',
+              border: '1.5px solid #047857',
+              borderRadius: '12px',
+              padding: '4px 10px',
+              fontSize: '11px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 6px rgba(5, 150, 105, 0.4)'
+            }}
+            title="Jelajahi dan klaim hasil seluruh wilayah desa & petualangan sekaligus"
+          >
+            ⚡ Klaim Semua Wilayah
+          </button>
         </div>
       </div>
 
       {/* Interactive Nodes along the trail */}
       {activeNodes.map((node) => {
-        const isUnlockedDirectly = (() => {
-          try {
-            const raw = localStorage.getItem('zorro_map_unlocked');
-            return raw ? JSON.parse(raw).includes(node.id) : false;
-          } catch (e) { return false; }
-        })();
-        const isLocked = level < node.reqLevel && !isUnlockedDirectly && !claimedNodes.includes(node.id);
+        const isLocked = false;
         const isClaimed = claimedNodes.includes(node.id);
 
         return (

@@ -247,29 +247,29 @@ export function SanctuaryView({
         id: 'kitty_sofa',
         name: 'Kitty Sofa',
         preview: '/ui/renovations/kitty_sofa.png',
-        priceGems: 150,
-        reqLevel: 2
+        priceGems: 15,
+        reqLevel: 1
       },
       {
         id: 'pastel_cattree',
         name: 'Pastel Cat Tree',
         preview: '/ui/renovations/pastel_cattree.png',
-        priceCoins: 4000,
-        reqLevel: 3
+        priceCoins: 400,
+        reqLevel: 1
       },
       {
         id: 'floral_rug',
         name: 'Floral Rug',
         preview: '/ui/renovations/floral_rug.png',
-        priceCoins: 800,
+        priceCoins: 200,
         reqLevel: 1
       },
       {
         id: 'cozy_teacup',
         name: 'Cozy Teacup Set',
         preview: '/ui/renovations/cozy_teacup.png',
-        priceCoins: 1500,
-        reqLevel: 2
+        priceCoins: 300,
+        reqLevel: 1
       }
     ],
     toys: [
@@ -277,22 +277,22 @@ export function SanctuaryView({
         id: 'feather_wand',
         name: 'Feather Wand',
         preview: '/ui/sprites/yarn_ball.png',
-        priceCoins: 900,
+        priceCoins: 150,
         reqLevel: 1
       },
       {
         id: 'catnip_mouse',
         name: 'Catnip Plush Mouse',
         preview: '/ui/sprites/paw_lv2.png',
-        priceCoins: 2000,
-        reqLevel: 2
+        priceCoins: 250,
+        reqLevel: 1
       },
       {
         id: 'laser_tower',
         name: 'Laser Beam Tower',
         preview: '/ui/sprites/paw_lv3.png',
-        priceGems: 90,
-        reqLevel: 3
+        priceGems: 10,
+        reqLevel: 1
       }
     ],
     decor: [
@@ -300,15 +300,15 @@ export function SanctuaryView({
         id: 'potted_fern',
         name: 'Potted Fern Plant',
         preview: '/ui/renovations/floral_rug.png',
-        priceCoins: 600,
+        priceCoins: 100,
         reqLevel: 1
       },
       {
         id: 'cat_clock',
         name: 'Kitty Wall Clock',
         preview: '/ui/renovations/cozy_teacup.png',
-        priceCoins: 2000,
-        reqLevel: 2
+        priceCoins: 350,
+        reqLevel: 1
       }
     ]
   };
@@ -341,6 +341,31 @@ export function SanctuaryView({
 
     // Open Piece of Cake 3-choice aesthetic selector
     handleOpenStyleModal(item, true);
+  };
+
+  const handleAutoRenovateAll = () => {
+    audio.playFanfare();
+    confetti({ particleCount: 75, spread: 90, origin: { y: 0.6 } });
+    const allIds = [
+      'clean_floor', 'zorro_cushion', 'pastel_rug', 'cat_tree', 'coffee_counter',
+      'neon_sign', 'chandelier', 'wall_art', 'kitty_sofa', 'pastel_cattree',
+      'floral_rug', 'cozy_teacup', 'feather_wand', 'catnip_mouse', 'laser_tower',
+      'potted_fern', 'cat_clock'
+    ];
+    const unlockedMap = {};
+    const stylesMap = {};
+    allIds.forEach(id => {
+      unlockedMap[id] = true;
+      stylesMap[id] = 0;
+    });
+    setUnlockedItems(unlockedMap);
+    setPlacedStyles(stylesMap);
+    try {
+      localStorage.setItem('zorro_unlocked_decor', JSON.stringify(unlockedMap));
+      localStorage.setItem('zorro_placed_styles', JSON.stringify(stylesMap));
+    } catch (e) {}
+    if (onAddStars) onAddStars(3);
+    if (onShowToast) onShowToast("🎉 Seluruh Kafe Zorro Berhasil Direnovasi Mewah Bintang 5! ✨ (+3 ⭐)");
   };
 
   const handleConfirmStyle = () => {
@@ -1517,6 +1542,32 @@ export function SanctuaryView({
             <span>DÉCOR</span>
           </button>
 
+          {/* Auto Renovate All 5-Star Button */}
+          <button
+            onClick={handleAutoRenovateAll}
+            className="mockup-action-btn shimmer-badge"
+            style={{
+              marginLeft: 'auto',
+              marginRight: '8px',
+              background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+              border: '2px solid #047857',
+              borderRadius: '14px',
+              padding: '5px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              color: '#FFF',
+              fontWeight: '900',
+              fontSize: '11px',
+              boxShadow: '0 2px 6px rgba(5, 150, 105, 0.4)'
+            }}
+            title="Renovasi seluruh perabotan cafe menjadi bintang 5 seketika"
+          >
+            <span>✨</span>
+            <span>Renovasi Semua Bintang 5</span>
+          </button>
+
           {/* Minimize / Hide Drawer Button */}
           <button
             onClick={() => {
@@ -1524,7 +1575,6 @@ export function SanctuaryView({
               setIsDrawerOpen(false);
             }}
             style={{
-              marginLeft: 'auto',
               marginRight: '8px',
               background: 'linear-gradient(180deg, #FFFDF8 0%, #FAEDD9 100%)',
               border: '2px solid #8B5A2B',

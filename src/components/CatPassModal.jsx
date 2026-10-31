@@ -146,11 +146,11 @@ export function CatPassModal({
                 <span>👑</span> Jalur Cat Pass Season 1
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                {CAT_PASS_TIERS.some(tier => pawPoints >= tier.requiredPawPoints && !claimedTiers.includes(tier.tier)) && (
+                {CAT_PASS_TIERS.some(tier => !claimedTiers.includes(tier.tier)) && (
                   <button
                     onClick={() => {
                       audio.playFanfare();
-                      CAT_PASS_TIERS.filter(tier => pawPoints >= tier.requiredPawPoints && !claimedTiers.includes(tier.tier))
+                      CAT_PASS_TIERS.filter(tier => !claimedTiers.includes(tier.tier))
                         .forEach(tier => handleClaimTier(tier));
                     }}
                     className="cozy-btn"
@@ -288,11 +288,11 @@ export function CatPassModal({
                 <span>📋</span> Misi Harian Kafe
               </span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {DAILY_QUESTS.some(q => (questProgress[q.id] || 0) >= q.target && !claimedQuests.includes(q.id)) && (
+                {DAILY_QUESTS.some(q => !claimedQuests.includes(q.id)) && (
                   <button
                     onClick={() => {
                       audio.playFanfare();
-                      DAILY_QUESTS.filter(q => (questProgress[q.id] || 0) >= q.target && !claimedQuests.includes(q.id))
+                      DAILY_QUESTS.filter(q => !claimedQuests.includes(q.id))
                         .forEach(q => handleClaimQuest(q));
                     }}
                     className="cozy-btn"

@@ -205,7 +205,7 @@ export function MergeBoard({
 
   // Spawner action: drops new item into nearest empty cell from chosen category
   const handleSpawnItem = (category = 'food') => {
-    if (energy < 1) {
+    if (category !== 'gift' && energy < 1) {
       audio.playPop();
       if (onShowToast) onShowToast("Energi habis! Membuka menu isi ulang energi ⚡");
       if (onOpenEnergyModal) {
@@ -247,25 +247,41 @@ export function MergeBoard({
     // Save history for undo
     setBoardHistory(h => [...h.slice(-10), [...board]]);
 
-    // F5: Spawn the EXACT previewed item from nextFoodItem, nextToyItem, or nextCatItem!
-    let previewed = nextFoodItem;
-    let fallbackItem = ITEMS.food_1;
-    if (category === 'toys') {
-      previewed = nextToyItem;
-      fallbackItem = ITEMS.toys_1;
-    } else if (category === 'cats') {
-      previewed = nextCatItem;
-      fallbackItem = ITEMS.cats_1;
-    }
+    let spawnedItem;
+    if (category === 'gift') {
+      spawnedItem = {
+        id: 'mystery_gift',
+        name: 'Kotak Kejutan Meow',
+        nameId: 'Kotak Kejutan Meow',
+        icon: '🎁',
+        color: '#FEF3C7',
+        borderColor: '#F59E0B',
+        level: 1,
+        uid: `gift_${Date.now()}`,
+        isGiftBox: true,
+        desc: 'Ketuk untuk membuka hadiah kejutan spesial!'
+      };
+    } else {
+      // F5: Spawn the EXACT previewed item from nextFoodItem, nextToyItem, or nextCatItem!
+      let previewed = nextFoodItem;
+      let fallbackItem = ITEMS.food_1;
+      if (category === 'toys') {
+        previewed = nextToyItem;
+        fallbackItem = ITEMS.toys_1;
+      } else if (category === 'cats') {
+        previewed = nextCatItem;
+        fallbackItem = ITEMS.cats_1;
+      }
 
-    const spawnedItem = previewed?.itemData
-      ? { ...previewed.itemData, uid: `item_${Date.now()}_${Math.random().toString(36).slice(2, 5)}` }
-      : { ...fallbackItem, uid: `item_${Date.now()}` };
+      spawnedItem = previewed?.itemData
+        ? { ...previewed.itemData, uid: `item_${Date.now()}_${Math.random().toString(36).slice(2, 5)}` }
+        : { ...fallbackItem, uid: `item_${Date.now()}` };
+
+      if (onConsumeEnergy) onConsumeEnergy(1);
+    }
 
     const newBoard = [...board];
     newBoard[targetIdx] = spawnedItem;
-
-    if (onConsumeEnergy) onConsumeEnergy(1);
     audio.playPop();
 
     // Trigger spawner wobble & bouncy spawn animation
@@ -2161,6 +2177,30 @@ export function MergeBoard({
                 >
                   <span style={{ fontSize: '13px' }}>🐱</span>
                   <span>Anabul (-1⚡)</span>
+                </button>
+
+                <button
+                  onClick={() => handleSpawnItem('gift')}
+                  className="mockup-action-btn shimmer-badge"
+                  style={{
+                    background: 'linear-gradient(180deg, #FDE047 0%, #EAB308 50%, #CA8A04 100%)',
+                    border: '2px solid #A16207',
+                    borderBottom: '3.5px solid #713F12',
+                    borderRadius: '16px',
+                    padding: '6px 12px',
+                    color: '#422006',
+                    fontSize: '11px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    boxShadow: '0 4px 12px rgba(202, 138, 4, 0.4), inset 0 2px 2px rgba(255,255,255,0.6)'
+                  }}
+                  title="Keluarkan Kotak Hadiah Kejutan (Gratis Energi)"
+                >
+                  <span style={{ fontSize: '13px' }}>🎁</span>
+                  <span>Hadiah (Gratis)</span>
                 </button>
               </div>
             </div>
