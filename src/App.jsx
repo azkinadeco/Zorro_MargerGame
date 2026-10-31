@@ -229,25 +229,45 @@ export default function App() {
     try { localStorage.setItem(`${STORAGE_KEY}_bgm_vol`, vol.toString()); } catch (e) {}
   };
 
-  // Toggle between Normal (Lv.1 Starter) and Sandbox (Lv.18 All-Unlocked)
+  // Toggle between Normal (Lv.1 Starter) and Sandbox / Full Game Unlocked (Lv.10 + 99k coins + all features)
   const handleToggleSandboxMode = () => {
     const next = !isSandboxMode;
     setIsSandboxMode(next);
     try {
       localStorage.setItem(`${STORAGE_KEY}_sandbox_mode`, next.toString());
       if (next) {
-        localStorage.setItem(`${STORAGE_KEY}_level`, '18');
-        localStorage.setItem(`${STORAGE_KEY}_coins`, '14350');
-        localStorage.setItem(`${STORAGE_KEY}_gems`, '210');
+        localStorage.setItem(`${STORAGE_KEY}_level`, '10');
+        localStorage.setItem(`${STORAGE_KEY}_coins`, '99999');
+        localStorage.setItem(`${STORAGE_KEY}_gems`, '999');
+        localStorage.setItem(`${STORAGE_KEY}_energy`, '100');
         localStorage.setItem(`${STORAGE_KEY}_board`, JSON.stringify(getInitialBoard()));
+        localStorage.setItem('zorro_unlocked_recipes', JSON.stringify(['recipe_donut', 'recipe_croissant', 'recipe_cake', 'recipe_pizza', 'recipe_pie', 'recipe_cookie']));
+        localStorage.setItem('zorro_recipe_mastery', JSON.stringify({ recipe_donut: 5, recipe_croissant: 5, recipe_cake: 5, recipe_pizza: 5, recipe_pie: 5, recipe_cookie: 5 }));
+        localStorage.setItem('zorro_map_unlocked', JSON.stringify(['node_dock', 'node_market', 'node_beach', 'node_forest', 'node_lighthouse', 'node_bakery_district', 'node_castle']));
+        localStorage.setItem('zorro_claimed_level_road', JSON.stringify([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
+        localStorage.setItem('zorro_cat_friendship', JSON.stringify({
+          zorro: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] },
+          thor: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] },
+          loki: { xp: 5000, level: 5, claimedLevels: [1, 2, 3, 4, 5] }
+        }));
+        setLevel(10);
+        setCoins(99999);
+        setGems(999);
+        setEnergy(100);
+        showToast("🚀 Mode Akses Penuh Aktif! Lv.10, 99.999 🪙, semua resep & pulau terbuka!");
       } else {
         localStorage.setItem(`${STORAGE_KEY}_level`, '1');
-        localStorage.setItem(`${STORAGE_KEY}_coins`, '50');
-        localStorage.setItem(`${STORAGE_KEY}_gems`, '25');
+        localStorage.setItem(`${STORAGE_KEY}_coins`, '500');
+        localStorage.setItem(`${STORAGE_KEY}_gems`, '50');
+        localStorage.setItem(`${STORAGE_KEY}_energy`, '100');
         localStorage.setItem(`${STORAGE_KEY}_board`, JSON.stringify(getStarterBoard()));
+        setLevel(1);
+        setCoins(500);
+        setGems(50);
+        setEnergy(100);
+        showToast("🌱 Berpindah ke Mode Normal (Lv.1)!");
       }
-      showToast(next ? "🛠️ Berpindah ke Mode Sandbox (Lv.18)!" : "🌱 Berpindah ke Mode Normal (Lv.1)!");
-      setTimeout(() => window.location.reload(), 400);
+      setTimeout(() => window.location.reload(), 450);
     } catch (e) {
       window.location.reload();
     }
@@ -1089,6 +1109,8 @@ export default function App() {
             audio.playPop();
             setShowLevelRoadModal(true);
           }}
+          isSandboxMode={isSandboxMode}
+          onToggleSandbox={handleToggleSandboxMode}
         />
 
         {/* Center Main Stage Content by Active View */}
@@ -1114,7 +1136,7 @@ export default function App() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              padding: '2px 0 4px 0',
+              padding: '2px 0 54px 0',
               gap: '4px',
               overflowY: 'auto',
               overflowX: 'hidden'

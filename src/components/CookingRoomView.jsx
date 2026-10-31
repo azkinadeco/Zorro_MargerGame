@@ -650,7 +650,7 @@ export function CookingRoomView({
             const isSelected = selectedRecipe === key;
             const bCount = recipeMastery[key] || 0;
             const mRank = getMasteryRank(bCount);
-            const locked = level < rec.reqLevel;
+            const locked = level < rec.reqLevel && !unlockedRecipes.includes(key);
 
             return (
               <button
@@ -734,29 +734,89 @@ export function CookingRoomView({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
           {bakingState === 'ready' && (
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <button
-                onClick={handleWhisk}
-                className="mockup-action-btn"
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
-                  border: '2.5px solid #9A3412',
-                  borderRadius: '14px',
-                  padding: '9px 16px',
-                  color: '#FFFFFF',
-                  fontSize: '12.5px',
-                  fontWeight: '900',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 10px rgba(234, 88, 12, 0.4)'
-                }}
-              >
-                <Utensils size={15} className={isWhisking ? 'whisk-spin-active' : ''} />
-                <span>Mulai Kocok Adonan (-{currentRecipe.energyCost || 5} ⚡)</span>
-              </button>
+              {isLocked ? (
+                <button
+                  onClick={() => {
+                    audio.playFanfare();
+                    const nextUnlocked = [...unlockedRecipes, selectedRecipe];
+                    setUnlockedRecipes(nextUnlocked);
+                    try { localStorage.setItem('zorro_unlocked_recipes', JSON.stringify(nextUnlocked)); } catch (e) {}
+                    if (onShowToast) onShowToast(`✨ Resep "${currentRecipe.title}" Berhasil Dibuka! Selamat memanggang! 🧁`);
+                  }}
+                  className="mockup-action-btn shimmer-badge"
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+                    border: '2.5px solid #047857',
+                    borderRadius: '14px',
+                    padding: '9px 16px',
+                    color: '#FFFFFF',
+                    fontSize: '12.5px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 10px rgba(5, 150, 105, 0.4)'
+                  }}
+                >
+                  <Sparkles size={16} />
+                  <span>🔓 Buka Resep Ini Sekarang</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleWhisk}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
+                    border: '2.5px solid #9A3412',
+                    borderRadius: '14px',
+                    padding: '9px 16px',
+                    color: '#FFFFFF',
+                    fontSize: '12.5px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 10px rgba(234, 88, 12, 0.4)'
+                  }}
+                >
+                  <Utensils size={15} className={isWhisking ? 'whisk-spin-active' : ''} />
+                  <span>Mulai Kocok Adonan (-{currentRecipe.energyCost || 5} ⚡)</span>
+                </button>
+              )}
+
+              {energy < (currentRecipe.energyCost || 5) && onAddEnergy && (
+                <button
+                  onClick={() => {
+                    audio.playPop();
+                    onAddEnergy(25);
+                    if (onShowToast) onShowToast("⚡ +25 Energi ditambahkan ke dapur!");
+                  }}
+                  className="mockup-action-btn"
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(180deg, #FDE047 0%, #EAB308 100%)',
+                    border: '1.5px solid #CA8A04',
+                    borderRadius: '12px',
+                    padding: '6px 12px',
+                    color: '#713F12',
+                    fontSize: '11px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <span>⚡ Energi Kurang? Isi +25 Energi Gratis</span>
+                </button>
+              )}
             </div>
           )}
 

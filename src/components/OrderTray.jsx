@@ -592,45 +592,75 @@ export function OrderTray({
               <span>KIRIM SELESAI</span>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                audio.playPop();
-                const missing = (activeOrder.items || []).find(r => countItemOnBoard(r.itemId) < (r.count || 1));
-                const missingDef = missing ? (ITEMS[missing.itemId] || getItemDetails(missing.itemId)) : null;
-                const missingName = missingDef?.nameId || missingDef?.name || 'item';
-                if (onShowToast) {
-                  onShowToast(`Pesanan belum lengkap! Butuh ${missingName}. Gabungkan item di papan untuk membuatnya! 🐾`);
-                }
-                if (onItemHint && missing?.itemId) {
-                  onItemHint(missing.itemId);
-                }
-              }}
-              className="mockup-action-btn"
-              style={{
-                background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
-                border: '2px solid #C2410C',
-                borderBottom: '3.5px solid #9A3412',
-                borderRadius: '16px',
-                padding: '6px 14px',
-                color: '#FFFFFF',
-                fontSize: '11px',
-                fontWeight: '900',
-                cursor: 'pointer',
-                boxShadow: '0 2px 5px rgba(234, 88, 12, 0.35)',
-                zIndex: 60,
-                pointerEvents: 'auto',
-                touchAction: 'manipulation',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
-              title="Ketuk untuk melihat item yang dibutuhkan"
-            >
-              <span>🔍</span>
-              <span>Cari Item</span>
-            </button>
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  audio.playPop();
+                  const missing = (activeOrder.items || []).find(r => countItemOnBoard(r.itemId) < (r.count || 1));
+                  const missingDef = missing ? (ITEMS[missing.itemId] || getItemDetails(missing.itemId)) : null;
+                  const missingName = missingDef?.nameId || missingDef?.name || 'item';
+                  if (onShowToast) {
+                    onShowToast(`Pesanan butuh ${missingName}. Gabungkan item di papan atau gunakan tombol "⚡ Penuhi Instan"! 🐾`);
+                  }
+                  if (onItemHint && missing?.itemId) {
+                    onItemHint(missing.itemId);
+                  }
+                }}
+                className="mockup-action-btn"
+                style={{
+                  background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
+                  border: '1.5px solid #C2410C',
+                  borderBottom: '3px solid #9A3412',
+                  borderRadius: '14px',
+                  padding: '6px 10px',
+                  color: '#FFFFFF',
+                  fontSize: '10.5px',
+                  fontWeight: '900',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 4px rgba(234, 88, 12, 0.35)',
+                  zIndex: 60,
+                  pointerEvents: 'auto',
+                  touchAction: 'manipulation',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px'
+                }}
+                title="Ketuk untuk melihat panduan item yang dibutuhkan"
+              >
+                <span>🔍</span>
+                <span>Cari</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleServe}
+                className="mockup-action-btn shimmer-badge"
+                style={{
+                  background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
+                  border: '2px solid #047857',
+                  borderBottom: '3.5px solid #064E3B',
+                  borderRadius: '14px',
+                  padding: '6px 12px',
+                  color: '#FFFFFF',
+                  fontSize: '11px',
+                  fontWeight: '900',
+                  cursor: 'pointer',
+                  boxShadow: '0 3px 8px rgba(5, 150, 105, 0.45)',
+                  zIndex: 60,
+                  pointerEvents: 'auto',
+                  touchAction: 'manipulation',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                title="Kirim dan penuhi pesanan sekarang secara instan"
+              >
+                <Check size={14} strokeWidth={3} />
+                <span>⚡ Kirim Langsung</span>
+              </button>
+            </div>
           )}
         </div>
       </div>

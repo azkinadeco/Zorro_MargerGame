@@ -508,9 +508,23 @@ export function FeedingModal({
                             Klaim 🎁
                           </button>
                         ) : (
-                          <div style={{ fontSize: '10px', fontWeight: '700', color: '#94A3B8' }}>
-                            {lvl.xpNeeded} XP
-                          </div>
+                          <button
+                            onClick={() => handleClaim(lvl)}
+                            className="cozy-btn"
+                            style={{
+                              padding: '5px 9px',
+                              background: 'linear-gradient(135deg, #FDE047 0%, #EAB308 100%)',
+                              color: '#713F12',
+                              borderRadius: '10px',
+                              fontSize: '10.5px',
+                              fontWeight: '900',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
+                            title="Klaim hadiah ikatan persahabatan anabul"
+                          >
+                            ⚡ Klaim 🎁
+                          </button>
                         )}
                       </div>
                     </div>

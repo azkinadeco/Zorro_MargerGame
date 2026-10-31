@@ -271,7 +271,9 @@ export function Header({
   onOpenCatPass,
   onOpenEvent,
   onOpenWardrobe,
-  canClaimDaily = true
+  canClaimDaily = true,
+  isSandboxMode = false,
+  onToggleSandbox
 }) {
   const formatNumber = (num) => {
     return (num || 0).toLocaleString('en-US');
@@ -423,6 +425,38 @@ export function Header({
             <span>🎡</span>
             <span>Roda</span>
           </button>
+
+          {/* Quick Access: Mode Akses Penuh / Full Game Unlocked Toggle */}
+          {onToggleSandbox && (
+            <button
+              onClick={() => {
+                audio.playFanfare();
+                onToggleSandbox();
+              }}
+              className="mockup-action-btn shimmer-badge"
+              style={{
+                background: isSandboxMode
+                  ? 'linear-gradient(180deg, #10B981 0%, #059669 100%)'
+                  : 'linear-gradient(180deg, #8B5CF6 0%, #6D28D9 100%)',
+                border: isSandboxMode ? '1.5px solid #047857' : '1.5px solid #5B21B6',
+                borderRadius: '12px',
+                padding: '2px 9px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: '#FFF',
+                fontSize: '11px',
+                fontWeight: '900',
+                cursor: 'pointer',
+                boxShadow: '0 2px 5px rgba(109, 40, 217, 0.4)'
+              }}
+              aria-label="Mode Akses Penuh Full Game"
+              title="Buka Semua Fitur Game: Lv.10, 99k Koin, Semua Resep & Peta"
+            >
+              <span>🚀</span>
+              <span>{isSandboxMode ? 'Full Game ON' : 'Buka Semua'}</span>
+            </button>
+          )}
 
           {/* Consolidated Activity Center Drawer Button */}
           <button

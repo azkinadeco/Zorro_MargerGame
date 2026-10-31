@@ -157,15 +157,17 @@ export function SettingsModal({
               flexDirection: 'column',
               gap: '8px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '20px' }}>🎮</span>
+                  <span style={{ fontSize: '22px' }}>🚀</span>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: '900', color: '#3B1E08' }}>
-                      Mode Permainan
+                      Mode Akses Penuh (Full Game)
                     </div>
-                    <div style={{ fontSize: '11px', color: '#8A5833', fontWeight: '700' }}>
-                      {isSandboxMode ? 'Mode Sandbox (Lv.18 & Koin Banyak)' : 'Mode Normal Komersial (Mulai Lv.1)'}
+                    <div style={{ fontSize: '10.5px', color: '#8A5833', fontWeight: '700' }}>
+                      {isSandboxMode
+                        ? 'Semua fitur terbuka: Lv.10, 99.999 🪙, semua resep & peta!'
+                        : 'Mode normal pemain baru (Lv.1 progres alami)'}
                     </div>
                   </div>
                 </div>
@@ -174,19 +176,23 @@ export function SettingsModal({
                     audio.playPop();
                     if (onToggleSandboxMode) onToggleSandboxMode();
                   }}
+                  className="mockup-action-btn shimmer-badge"
                   style={{
-                    padding: '5px 12px',
+                    padding: '7px 14px',
                     borderRadius: '12px',
-                    background: isSandboxMode ? '#F59E0B' : '#10B981',
+                    background: isSandboxMode
+                      ? 'linear-gradient(180deg, #F59E0B 0%, #D97706 100%)'
+                      : 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
                     color: '#FFF',
                     border: 'none',
                     fontSize: '11px',
                     fontWeight: '900',
                     cursor: 'pointer',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.15)'
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                    whiteSpace: 'nowrap'
                   }}
                 >
-                  {isSandboxMode ? 'Ganti ke Normal' : 'Ganti ke Sandbox'}
+                  {isSandboxMode ? 'Kembali ke Normal' : '⚡ Buka Semua Fitur!'}
                 </button>
               </div>
             </div>

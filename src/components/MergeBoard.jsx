@@ -14,15 +14,22 @@ const SPAWN_CATALOG_FOOD = [
   { name: 'Level 1 Energy Spark', sprite: '/ui/icon_energy_bolt.png', level: 1, item: ITEMS.energy_1 }
 ];
 
+const SPAWN_CATALOG_TOYS = [
+  { name: 'Level 1 Bola Benang Pastel', sprite: '/ui/sprites/yarn_ball.png', level: 1, item: ITEMS.toys_1 },
+  { name: 'Level 2 Tongkat Bulu Ayun', sprite: '/ui/sprites/yarn_ball.png', level: 2, item: ITEMS.toys_2 },
+  { name: 'Level 3 Kerincingan Gemerincing', sprite: '/ui/sprites/yarn_ball.png', level: 3, item: ITEMS.toys_3 }
+];
+
 const SPAWN_CATALOG_CATS = [
   { name: 'Level 1 Jejak Cakar Kucing', sprite: '/ui/sprites/paw_lv1.png', level: 1, item: ITEMS.cats_1 },
-  { name: 'Level 2 Anak Kucing Tidur', sprite: '/ui/sprites/kitten_sleeping.png', level: 2, item: ITEMS.cats_2 },
-  { name: 'Level 1 Bola Wol Pastel', sprite: '/ui/sprites/yarn_ball.png', level: 1, item: ITEMS.toys_1 },
-  { name: 'Level 2 Tongkat Bulu Ayun', sprite: '/ui/sprites/yarn_ball.png', level: 2, item: ITEMS.toys_2 }
+  { name: 'Level 2 Anak Kucing Tidur', sprite: '/ui/sprites/kitten_sleeping.png', level: 2, item: ITEMS.cats_2 }
 ];
 
 const getRandomNextItem = (category = 'food') => {
-  const catalog = category === 'cats' ? SPAWN_CATALOG_CATS : SPAWN_CATALOG_FOOD;
+  let catalog = SPAWN_CATALOG_FOOD;
+  if (category === 'toys') catalog = SPAWN_CATALOG_TOYS;
+  else if (category === 'cats') catalog = SPAWN_CATALOG_CATS;
+
   const entry = catalog[Math.floor(Math.random() * catalog.length)];
   return {
     name: entry.name,
@@ -57,6 +64,7 @@ export function MergeBoard({
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
   const [hoverIndex, setHoverIndex] = useState(null);
   const [nextFoodItem, setNextFoodItem] = useState(() => getRandomNextItem('food'));
+  const [nextToyItem, setNextToyItem] = useState(() => getRandomNextItem('toys'));
   const [nextCatItem, setNextCatItem] = useState(() => getRandomNextItem('cats'));
   const [, setNowTick] = useState(0);
   const [boardHistory, setBoardHistory] = useState([]);
@@ -239,11 +247,20 @@ export function MergeBoard({
     // Save history for undo
     setBoardHistory(h => [...h.slice(-10), [...board]]);
 
-    // F5: Spawn the EXACT previewed item from nextFoodItem or nextCatItem!
-    const previewed = category === 'cats' ? nextCatItem : nextFoodItem;
+    // F5: Spawn the EXACT previewed item from nextFoodItem, nextToyItem, or nextCatItem!
+    let previewed = nextFoodItem;
+    let fallbackItem = ITEMS.food_1;
+    if (category === 'toys') {
+      previewed = nextToyItem;
+      fallbackItem = ITEMS.toys_1;
+    } else if (category === 'cats') {
+      previewed = nextCatItem;
+      fallbackItem = ITEMS.cats_1;
+    }
+
     const spawnedItem = previewed?.itemData
       ? { ...previewed.itemData, uid: `item_${Date.now()}_${Math.random().toString(36).slice(2, 5)}` }
-      : { ...(category === 'cats' ? ITEMS.cats_1 : ITEMS.food_1), uid: `item_${Date.now()}` };
+      : { ...fallbackItem, uid: `item_${Date.now()}` };
 
     const newBoard = [...board];
     newBoard[targetIdx] = spawnedItem;
@@ -261,7 +278,9 @@ export function MergeBoard({
     if (onItemDiscovered && spawnedItem?.id) onItemDiscovered(spawnedItem.id);
 
     // Roll next accurate item preview for the used category
-    if (category === 'cats') {
+    if (category === 'toys') {
+      setNextToyItem(getRandomNextItem('toys'));
+    } else if (category === 'cats') {
       setNextCatItem(getRandomNextItem('cats'));
     } else {
       setNextFoodItem(getRandomNextItem('food'));
@@ -279,7 +298,7 @@ export function MergeBoard({
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [board, energy, selectedIndex, mergeablePairs, nextFoodItem, nextCatItem]);
+  }, [board, energy, selectedIndex, mergeablePairs, nextFoodItem, nextToyItem, nextCatItem]);
 
   // F6 & F7: 1-Second Interval for Generator Cooldown Recovery & Magic Soap Bubble 45s Auto-Pop
   useEffect(() => {
@@ -1514,11 +1533,15 @@ export function MergeBoard({
       {/* Bottom Row controls: SELECTED ITEM ACTIONS or NEXT ITEM + SPAWNER */}
       <div style={{
         width: '940px',
+        maxWidth: '96vw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '8px',
         marginTop: '8px',
-        padding: '0 4px'
+        padding: '0 4px',
+        paddingBottom: '28px'
       }}>
         {selectedIndex !== null && board[selectedIndex] ? (
           /* Item Selected Action Bar: Sell, Use, or Cancel */
@@ -1831,14 +1854,15 @@ export function MergeBoard({
                 borderTopRightRadius: '4px'
               }} />
 
-              {/* Dual Next Item Previews (Food & Cat Spawner Accuracy) */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Triple Next Item Previews (Food, Toys, & Cat Spawner Accuracy) */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* 1. Food Preview */}
                 <div
                   onClick={() => handleSpawnItem('food')}
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
                   title={`Ketuk untuk keluarkan Makanan: ${nextFoodItem.name}`}
                 >
-                  <div style={{ width: '36px', height: '36px', flexShrink: 0 }}>
+                  <div style={{ width: '32px', height: '32px', flexShrink: 0 }}>
                     <Semi3DItemToken
                       item={nextFoodItem.itemData || ITEMS.food_1}
                       isSelected={false}
@@ -1847,21 +1871,46 @@ export function MergeBoard({
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '9px', fontWeight: '900', color: '#C2410C' }}>🥫 NEXT MAKANAN</span>
-                    <span style={{ fontSize: '10.5px', fontWeight: '800', color: '#3B1E08', maxWidth: '90px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ fontSize: '8.5px', fontWeight: '900', color: '#C2410C' }}>🥫 MAKANAN</span>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#3B1E08', maxWidth: '75px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {nextFoodItem.itemData?.nameId || nextFoodItem.name}
                     </span>
                   </div>
                 </div>
 
-                <div style={{ width: '1.5px', height: '28px', background: '#D6B896' }} />
+                <div style={{ width: '1.5px', height: '24px', background: '#D6B896' }} />
 
+                {/* 2. Toys Preview */}
+                <div
+                  onClick={() => handleSpawnItem('toys')}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
+                  title={`Ketuk untuk keluarkan Mainan: ${nextToyItem.name}`}
+                >
+                  <div style={{ width: '32px', height: '32px', flexShrink: 0 }}>
+                    <Semi3DItemToken
+                      item={nextToyItem.itemData || ITEMS.toys_1}
+                      isSelected={false}
+                      showLevelBadge={false}
+                      size="100%"
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '8.5px', fontWeight: '900', color: '#0284C7' }}>🧶 MAINAN</span>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#3B1E08', maxWidth: '75px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {nextToyItem.itemData?.nameId || nextToyItem.name}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ width: '1.5px', height: '24px', background: '#D6B896' }} />
+
+                {/* 3. Cat Preview */}
                 <div
                   onClick={() => handleSpawnItem('cats')}
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}
                   title={`Ketuk untuk keluarkan Anabul: ${nextCatItem.name}`}
                 >
-                  <div style={{ width: '36px', height: '36px', flexShrink: 0 }}>
+                  <div style={{ width: '32px', height: '32px', flexShrink: 0 }}>
                     <Semi3DItemToken
                       item={nextCatItem.itemData || ITEMS.cats_1}
                       isSelected={false}
@@ -1870,8 +1919,8 @@ export function MergeBoard({
                     />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '9px', fontWeight: '900', color: '#7E22CE' }}>🐱 NEXT ANABUL</span>
-                    <span style={{ fontSize: '10.5px', fontWeight: '800', color: '#3B1E08', maxWidth: '90px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ fontSize: '8.5px', fontWeight: '900', color: '#7E22CE' }}>🐱 ANABUL</span>
+                    <span style={{ fontSize: '10px', fontWeight: '800', color: '#3B1E08', maxWidth: '75px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {nextCatItem.itemData?.nameId || nextCatItem.name}
                     </span>
                   </div>
@@ -2017,8 +2066,8 @@ export function MergeBoard({
                 </button>
               )}
 
-              {/* Dual Spawner Buttons (Piece of Cake split pipeline: Food vs Cats) */}
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              {/* Triple Spawner Buttons (Food, Toys, & Cats) */}
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => handleSpawnItem('food')}
                   className={`mockup-action-btn shimmer-badge ${isSpawnerWobbling ? 'wobble-spawner' : ''}`}
@@ -2027,7 +2076,7 @@ export function MergeBoard({
                     border: '2px solid #9A3412',
                     borderBottom: '3.5px solid #7C2D12',
                     borderRadius: '16px',
-                    padding: '6px 14px',
+                    padding: '6px 12px',
                     color: '#FFFFFF',
                     fontSize: '11px',
                     fontWeight: '900',
@@ -2062,8 +2111,32 @@ export function MergeBoard({
                       👇 Ketuk Makanan!
                     </div>
                   )}
-                  <span style={{ fontSize: '14px' }}>🥫</span>
+                  <span style={{ fontSize: '13px' }}>🥫</span>
                   <span>Makanan (-1⚡)</span>
+                </button>
+
+                <button
+                  onClick={() => handleSpawnItem('toys')}
+                  className={`mockup-action-btn shimmer-badge ${isSpawnerWobbling ? 'wobble-spawner' : ''}`}
+                  style={{
+                    background: 'linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%)',
+                    border: '2px solid #075985',
+                    borderBottom: '3.5px solid #0C4A6E',
+                    borderRadius: '16px',
+                    padding: '6px 12px',
+                    color: '#FFFFFF',
+                    fontSize: '11px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.4), inset 0 2px 2px rgba(255,255,255,0.6)'
+                  }}
+                  title="Ambil Mainan Wol & Tongkat Bulu (-1 Energi)"
+                >
+                  <span style={{ fontSize: '13px' }}>🧶</span>
+                  <span>Mainan (-1⚡)</span>
                 </button>
 
                 <button
@@ -2074,7 +2147,7 @@ export function MergeBoard({
                     border: '2px solid #6B21A8',
                     borderBottom: '3.5px solid #581C87',
                     borderRadius: '16px',
-                    padding: '6px 14px',
+                    padding: '6px 12px',
                     color: '#FFFFFF',
                     fontSize: '11px',
                     fontWeight: '900',
@@ -2084,9 +2157,9 @@ export function MergeBoard({
                     gap: '4px',
                     boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4), inset 0 2px 2px rgba(255,255,255,0.6)'
                   }}
-                  title="Ambil Mainan & Anabul Kucing (-1 Energi)"
+                  title="Ambil Anabul Kucing (-1 Energi)"
                 >
-                  <span style={{ fontSize: '14px' }}>🐱</span>
+                  <span style={{ fontSize: '13px' }}>🐱</span>
                   <span>Anabul (-1⚡)</span>
                 </button>
               </div>

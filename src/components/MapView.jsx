@@ -210,7 +210,14 @@ export function MapView({
   ];
 
   const allNodes = [...villageNodes, ...adventureNodes];
-  const unlockedCount = allNodes.filter(n => level >= n.reqLevel).length;
+  const unlockedCount = allNodes.filter(n => {
+    if (level >= n.reqLevel) return true;
+    if (claimedNodes.includes(n.id)) return true;
+    try {
+      const raw = localStorage.getItem('zorro_map_unlocked');
+      return raw ? JSON.parse(raw).includes(n.id) : false;
+    } catch (e) { return false; }
+  }).length;
 
   const activeNodes = mapMode === 'village' ? villageNodes : adventureNodes;
 
@@ -371,7 +378,13 @@ export function MapView({
 
       {/* Interactive Nodes along the trail */}
       {activeNodes.map((node) => {
-        const isLocked = level < node.reqLevel;
+        const isUnlockedDirectly = (() => {
+          try {
+            const raw = localStorage.getItem('zorro_map_unlocked');
+            return raw ? JSON.parse(raw).includes(node.id) : false;
+          } catch (e) { return false; }
+        })();
+        const isLocked = level < node.reqLevel && !isUnlockedDirectly && !claimedNodes.includes(node.id);
         const isClaimed = claimedNodes.includes(node.id);
 
         return (

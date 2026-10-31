@@ -105,9 +105,9 @@ export function LevelRoadModal({
     }
   ];
 
-  const handleClaim = (milestone) => {
+  const handleClaim = (milestone, force = false) => {
     if (claimedLevels.includes(milestone.level)) return;
-    if (level < milestone.level) return;
+    if (!force && level < milestone.level) return;
 
     audio.playFanfare();
     safeConfetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
@@ -127,10 +127,10 @@ export function LevelRoadModal({
     }
   };
 
-  const handleClaimAll = () => {
-    const uncollected = levelMilestones.filter(m => level >= m.level && !claimedLevels.includes(m.level));
+  const handleClaimAll = (bypassLevel = false) => {
+    const uncollected = levelMilestones.filter(m => (bypassLevel || level >= m.level) && !claimedLevels.includes(m.level));
     if (uncollected.length === 0) {
-      if (onShowToast) onShowToast("Semua hadiah level yang terbuka sudah kamu klaim!");
+      if (onShowToast) onShowToast("Semua hadiah level sudah kamu klaim!");
       return;
     }
 
@@ -275,10 +275,10 @@ export function LevelRoadModal({
             </button>
 
             {/* Claim All Button */}
-            {uncollectedCount > 0 && (
+            {levelMilestones.some(m => !claimedLevels.includes(m.level)) && (
               <button
-                onClick={handleClaimAll}
-                className="mockup-action-btn"
+                onClick={() => handleClaimAll(true)}
+                className="mockup-action-btn shimmer-badge"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -291,11 +291,12 @@ export function LevelRoadModal({
                   fontWeight: '900',
                   color: '#FFF',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(5, 150, 105, 0.3)'
+                  boxShadow: '0 3px 8px rgba(5, 150, 105, 0.45)'
                 }}
+                title="Klaim semua hadiah level sekaligus tanpa syarat"
               >
                 <Sparkles size={14} />
-                <span>Klaim Semua ({uncollectedCount}) ✨</span>
+                <span>Klaim Semua Hadiah ✨</span>
               </button>
             )}
 
@@ -471,16 +472,27 @@ export function LevelRoadModal({
                       <span>Klaim Hadiah</span>
                     </button>
                   ) : (
-                    <div style={{
-                      padding: '8px 14px',
-                      background: '#F3F4F6',
-                      borderRadius: '14px',
-                      color: '#9CA3AF',
-                      fontSize: '12px',
-                      fontWeight: '800'
-                    }}>
-                      🔒 Butuh Lv. {m.level}
-                    </div>
+                    <button
+                      onClick={() => handleClaim(m, true)}
+                      className="mockup-action-btn"
+                      style={{
+                        background: 'linear-gradient(180deg, #FDE047 0%, #EAB308 100%)',
+                        border: '2px solid #CA8A04',
+                        borderRadius: '14px',
+                        padding: '8px 14px',
+                        color: '#713F12',
+                        fontSize: '12px',
+                        fontWeight: '900',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        boxShadow: '0 3px 8px rgba(202, 138, 4, 0.3)'
+                      }}
+                      title="Klaim hadiah level ini sekarang juga"
+                    >
+                      <span>⚡ Klaim Sekarang</span>
+                    </button>
                   )}
                 </div>
               </div>

@@ -244,9 +244,23 @@ export function CatPassModal({
                           Buka Hadiah 🎁
                         </button>
                       ) : (
-                        <div style={{ fontSize: '10.5px', fontWeight: '800', color: '#94A3B8' }}>
-                          🔒 {tier.requiredPawPoints - pawPoints} lagi
-                        </div>
+                        <button
+                          onClick={() => handleClaimTier(tier)}
+                          className="cozy-btn"
+                          style={{
+                            padding: '5px 10px',
+                            fontSize: '10.5px',
+                            borderRadius: '10px',
+                            background: 'linear-gradient(135deg, #FDE047 0%, #EAB308 100%)',
+                            color: '#713F12',
+                            border: 'none',
+                            fontWeight: '900',
+                            cursor: 'pointer'
+                          }}
+                          title="Buka hadiah tier ini langsung"
+                        >
+                          ⚡ Klaim 🎁
+                        </button>
                       )}
                     </div>
                   </div>
@@ -376,11 +390,23 @@ export function CatPassModal({
                           Klaim! ✨
                         </button>
                       ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '10px', fontWeight: '800', color: '#EA580C' }}>
-                          <span>+{quest.rewardPawPoints} 🐾</span>
-                          {quest.rewardCoins && <span>+{quest.rewardCoins} 🪙</span>}
-                          {quest.rewardEnergy && <span>+{quest.rewardEnergy} ⚡</span>}
-                        </div>
+                        <button
+                          onClick={() => handleClaimQuest(quest)}
+                          className="cozy-btn"
+                          style={{
+                            padding: '5px 10px',
+                            fontSize: '10.5px',
+                            borderRadius: '10px',
+                            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            fontWeight: '900',
+                            cursor: 'pointer'
+                          }}
+                          title="Selesaikan & klaim hadiah misi ini seketika"
+                        >
+                          ⚡ Klaim ✨
+                        </button>
                       )}
                     </div>
                   </div>
