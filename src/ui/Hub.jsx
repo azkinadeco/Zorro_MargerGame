@@ -3,12 +3,14 @@ import { ItemArt } from '../art/ItemArt';
 import { useGameCtx } from '../game/useGame';
 import { anyPetReady } from './Pets';
 import { wheelReady } from './Wheel';
+import { careReady } from './Care';
 import { festClaimable, achClaimable, FEST_LEVEL } from '../game/meta';
 import { sfx } from '../game/audio';
 
 // Every side activity in one tidy grid. Extra entries register here.
 export const ACTIVITIES = [
   { key: 'pets', name: 'Teman Kucing', sub: 'Beri camilan', icon: 'cat', ready: anyPetReady },
+  { key: 'care', name: 'Rawat Kucing', sub: 'Elus & salon', icon: 'heart', ready: careReady },
   { key: 'wardrobe', name: 'Lemari Kostum', sub: 'Dandani kucing', icon: 'crown' },
   { key: 'wheel', name: 'Roda Hoki', sub: 'Putar gratis', icon: 'wheel', ready: wheelReady },
   { key: 'fest', name: 'Festival', sub: 'Hadiah mingguan', icon: 'tent', ready: (s) => festClaimable(s) > 0, level: FEST_LEVEL },

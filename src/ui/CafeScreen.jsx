@@ -181,7 +181,7 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         </button>
       </div>
 
-      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('pets')} outfits={state.wardrobe?.outfit} />
+      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('care')} outfits={state.wardrobe?.outfit} />
 
       {complete && <div className="area-done">✨ Ruangan selesai direnovasi! ✨</div>}
 

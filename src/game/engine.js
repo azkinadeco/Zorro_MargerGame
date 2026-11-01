@@ -609,6 +609,33 @@ export function feedPet(s, cat, emit) {
   return true;
 }
 
+export const CARE_COOLDOWN = 3 * 60 * 60 * 1000;
+
+export function careReadyIn(s, cat, mode, now = Date.now()) {
+  const t = s.care?.[cat]?.[mode] || 0;
+  return Math.max(0, t + CARE_COOLDOWN - now);
+}
+
+// mode: 'pet' (elus) or 'groom' (salon)
+export function finishCare(s, cat, mode, emit) {
+  if (!s.residents.includes(cat) || careReadyIn(s, cat, mode) > 0) return false;
+  ensurePets(s);
+  s.care ||= {};
+  (s.care[cat] ||= {})[mode] = Date.now();
+  const pet = s.pets[cat];
+  const before = heartsFor(pet.pts);
+  pet.pts += mode === 'groom' ? 8 : 5;
+  const after = heartsFor(pet.pts);
+  giveCurrency(s, mode === 'groom' ? { coins: 25 + s.level * 3, energy: 6 } : { energy: 8 }, emit);
+  for (let h = before + 1; h <= after; h++) {
+    const gems = 3 * h;
+    s.gems += gems;
+    emit('petHeart', { cat, hearts: h, gems, photo: PETS[cat].photos[h] || null });
+  }
+  emit('care', { cat, mode });
+  return true;
+}
+
 export function petMaxed(s, cat) {
   return heartsFor(s.pets?.[cat]?.pts || 0) >= MAX_HEARTS;
 }

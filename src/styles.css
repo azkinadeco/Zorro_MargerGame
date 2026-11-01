@@ -2954,3 +2954,135 @@ h4 {
   max-height: 100%;
   overflow: visible;
 }
+
+/* care mini-games */
+.care-stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: min(46vh, 330px);
+  padding: 30px 10px 10px;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 92%, #e9c79a 0 26%, transparent 27%), linear-gradient(#fde2e8, #fff3e6);
+  border: 2.5px solid #ead6bd;
+  touch-action: none;
+  overflow: hidden;
+  cursor: grab;
+}
+.care-stage.groom {
+  background: radial-gradient(ellipse at 50% 92%, #bfe3f0 0 30%, transparent 31%), linear-gradient(#dff4fb, #f4fbff);
+}
+.care-stage .care-cat {
+  height: 100%;
+  pointer-events: none;
+}
+.care-stage .care-cat > img {
+  height: 100%;
+  width: auto;
+}
+.care-cat.purring {
+  animation: purr 0.25s ease-in-out infinite;
+}
+@keyframes purr {
+  50% {
+    transform: translateX(1px) scale(1.005, 0.995);
+  }
+}
+.mud {
+  position: absolute;
+  width: 18%;
+  aspect-ratio: 1.2;
+  border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%;
+  background: radial-gradient(circle at 40% 35%, #a07a52, #6b4a2b 70%);
+  box-shadow: inset 0 0 0 2px rgba(60, 35, 15, 0.4);
+  pointer-events: none;
+  transition: opacity 0.1s, transform 0.1s;
+}
+.care-fx {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  font: 700 26px var(--font-head);
+  color: var(--pink);
+  text-shadow: 0 0 4px #fff;
+  animation: care-float 0.9s ease-out forwards;
+}
+.care-fx.spark {
+  color: #ffd23f;
+}
+.care-fx.bubble {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 30% 30%, #fff, rgba(160, 210, 240, 0.4));
+}
+@keyframes care-float {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -260%) scale(1.2);
+  }
+}
+.care-done {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  font: 700 18px var(--font-head);
+  white-space: nowrap;
+  animation: modal-in 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.care-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.care-meter .bar {
+  flex: 1;
+  height: 16px;
+}
+.care-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.care-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.care-card b {
+  font: 700 15px var(--font-head);
+}
+.care-card small {
+  flex: 1;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  line-height: 1.25;
+}
+.heart-reward .heart-cat.cat-fig {
+  width: auto;
+  height: 150px;
+}
+.heart-reward .heart-cat.cat-fig > img {
+  height: 100%;
+  width: auto;
+}
+.mud {
+  background: radial-gradient(circle at 40% 35%, rgba(160, 122, 82, 0.95), rgba(107, 74, 43, 0.9) 60%, rgba(107, 74, 43, 0.5) 100%);
+  border-radius: 58% 42% 63% 37% / 46% 61% 39% 54%;
+}
