@@ -17,11 +17,11 @@ export const FEST_TRACK = [
   { pts: 20, r: { gems: 5 } },
   { pts: 30, r: { item: 'chest_1' } },
   { pts: 42, r: { energy: 40 } },
-  { pts: 56, r: { gems: 8 } },
+  { pts: 56, r: { item: 'scissors_1' } },
   { pts: 72, r: { item: 'coin_3' } },
   { pts: 90, r: { item: 'chest_2' } },
   { pts: 110, r: { energy: 60 } },
-  { pts: 135, r: { gems: 15 } },
+  { pts: 135, r: { item: 'joker_1' } },
   { pts: 165, r: { item: 'energy_4' } },
   { pts: 200, r: { gems: 25, item: 'chest_3' } },
 ];

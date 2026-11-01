@@ -182,6 +182,10 @@ for (const [key, g] of Object.entries(GENERATORS)) {
   }
 }
 
+// Booster tools: drag onto an item to use
+add({ id: 'joker_1', kind: 'tool', chain: 'joker', tier: 1, max: 1, name: 'Paw Ajaib', desc: 'Seret ke item mana pun untuk menaikkannya satu level!', value: 0, sell: 0 });
+add({ id: 'scissors_1', kind: 'tool', chain: 'scissors', tier: 1, max: 1, name: 'Gunting Ajaib', desc: 'Seret ke item Lv 2+ untuk memecahnya jadi dua item satu level di bawahnya.', value: 0, sell: 0 });
+
 export function item(id) {
   return ITEMS[id];
 }

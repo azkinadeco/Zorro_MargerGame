@@ -66,6 +66,10 @@ function Game({ onReset }) {
           case 'move':
             sfx('move');
             break;
+          case 'split':
+            sfx('unbox');
+            vibrate(vibe, 15);
+            break;
           case 'unbox':
             sfx('unbox');
             break;

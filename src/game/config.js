@@ -24,6 +24,8 @@ export function levelRewards(level) {
   const r = { gems: 3 + Math.floor(level / 2), energy: 40, items: [] };
   if (level % 3 === 0) r.items.push('chest_2');
   else r.items.push('chest_1');
+  if (level % 4 === 0) r.items.push('joker_1');
+  else if (level % 4 === 2) r.items.push('scissors_1');
   return r;
 }
 

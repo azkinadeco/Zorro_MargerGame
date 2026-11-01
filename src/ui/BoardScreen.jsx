@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { COLS, ROWS } from '../game/config';
 import { item, nextId } from '../game/items';
 import { useGameCtx } from '../game/useGame';
-import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, swapOrder, SWAP_COST } from '../game/engine';
+import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, canTool, swapOrder, SWAP_COST } from '../game/engine';
 import { fmtTime } from './common';
 import { festClaimable, FEST_LEVEL } from '../game/meta';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
@@ -285,7 +285,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
     if (to < 0 || to === d.from) return;
     const a = state.board[d.from];
     const b = state.board[to];
-    if (b && !canMerge(a, b) && !b.st && !b.bubble) pendingFrom.set(b.uid, to);
+    if (b && !canMerge(a, b) && !canTool(a, b) && !b.st && !b.bubble) pendingFrom.set(b.uid, to);
     const ok = act(move, d.from, to);
     if (!ok) {
       if (b) pendingFrom.delete(b.uid);
@@ -303,7 +303,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
 
   const dragId = drag?.id;
   const overCell = drag ? state.board[drag.over] : null;
-  const canDrop = drag && drag.over >= 0 && drag.over !== drag.from && overCell && canMerge(state.board[drag.from], overCell);
+  const canDrop = drag && drag.over >= 0 && drag.over !== drag.from && overCell && (canMerge(state.board[drag.from], overCell) || canTool(state.board[drag.from], overCell));
 
   return (
     <div
@@ -334,7 +334,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
                   cellSize={cellSize}
                   selected={selected === cell.uid}
                   hidden={drag && drag.from === i}
-                  match={!!dragId && cell.id === dragId && drag.from !== i && !cell.bubble && !!nextId(cell.id)}
+                  match={!!dragId && drag.from !== i && ((cell.id === dragId && !cell.bubble && !!nextId(cell.id)) || canTool(state.board[drag.from], cell))}
                   wanted={!isGen && wanted.has(cell.id)}
                   now={hasBubble ? now : 0}
                   hinted={!!hintOk && !drag && (hint[0] === i || hint[1] === i)}

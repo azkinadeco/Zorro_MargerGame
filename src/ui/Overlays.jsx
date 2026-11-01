@@ -225,7 +225,7 @@ export function FX() {
         const cr = card;
         setTimeout(() => setBursts((x) => [...x, { id: fxId++, x: cr.left + cr.width / 2, y: cr.top + cr.height / 2, big: true }]), 520);
         sfx('serve');
-      } else if (t === 'merge' || t === 'unbox' || t === 'freeWeb' || t === 'popBubble' || t === 'chestOpen' || t === 'collect') {
+      } else if (t === 'merge' || t === 'split' || t === 'unbox' || t === 'freeWeb' || t === 'popBubble' || t === 'chestOpen' || t === 'collect') {
         const r = rectOf(`[data-cell="${d.idx}"]`);
         if (!r) return;
         const c = center(r);

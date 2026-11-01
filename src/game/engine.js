@@ -261,6 +261,18 @@ export function spawn(s, from, emit) {
   return true;
 }
 
+// Can tool `a` be used on target cell `b`?
+export function canTool(a, b) {
+  if (!a || !b || a.uid === b.uid || b.st === 'box' || b.bubble) return false;
+  const ta = item(a.id);
+  if (ta.kind !== 'tool') return false;
+  const tb = item(b.id);
+  if (tb.kind !== 'food') return false;
+  if (a.id === 'joker_1') return !!nextId(b.id);
+  if (a.id === 'scissors_1') return tb.tier >= 2 && !b.st;
+  return false;
+}
+
 export function canMerge(a, b) {
   if (!a || !b || a.uid === b.uid) return false;
   if (a.st || a.bubble || b.st === 'box' || b.bubble) return false;
@@ -272,6 +284,24 @@ export function move(s, from, to, emit) {
   const a = s.board[from];
   const b = s.board[to];
   if (!a || a.st) return false;
+  if (canTool(a, b)) {
+    if (a.id === 'joker_1') {
+      const nid = nextId(b.id);
+      s.board[from] = null;
+      s.board[to] = { id: nid, uid: uid(), merged: true };
+      s.stats.merges++;
+      questProgress(s, 'merge');
+      discover(s, nid, emit);
+      emit('merge', { idx: to, id: nid, freed: b.st === 'web', tool: true });
+      return true;
+    }
+    // scissors: the tool's own cell receives the second half
+    const lower = `${item(b.id).chain}_${item(b.id).tier - 1}`;
+    s.board[to] = { id: lower, uid: uid(), merged: true };
+    s.board[from] = { id: lower, uid: uid(), from: to };
+    emit('split', { idx: to, id: lower });
+    return true;
+  }
   if (canMerge(a, b)) {
     const nid = nextId(a.id);
     s.board[from] = null;
@@ -718,6 +748,8 @@ export function shopOffers(s) {
     offers.push({ key: 'o' + i, id: it.id, price: { coins: it.value * 6 + 10 } });
   }
   offers.push({ key: 'chest', id: 'chest_1', price: { gems: 8 } });
+  offers.push({ key: 'joker', id: 'joker_1', price: { gems: 14 } });
+  offers.push({ key: 'scissors', id: 'scissors_1', price: { gems: 6 } });
   const gens = chains.slice(-2);
   gens.forEach((ch, i) => offers.push({ key: 'gen' + i, id: `gen${ch}_1`, price: { gems: 20 } }));
   return offers;

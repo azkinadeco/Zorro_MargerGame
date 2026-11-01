@@ -137,7 +137,7 @@ export function CodexModal({ onClose }) {
   const { state, act } = useGameCtx();
   const [tab, setTab] = useState('coffee');
   const tabs = [...Object.keys(CHAINS), 'other'];
-  const ids = tab === 'other' ? [...Object.keys(REWARD_CHAINS).flatMap(chainIds), ...Object.keys(GENERATORS).flatMap((g) => chainIds('gen' + g))] : chainIds(tab);
+  const ids = tab === 'other' ? [...Object.keys(REWARD_CHAINS).flatMap(chainIds), ...Object.keys(GENERATORS).flatMap((g) => chainIds('gen' + g)), 'joker_1', 'scissors_1'] : chainIds(tab);
   const found = Object.keys(state.discovered).length;
   return (
     <Modal title="Buku Resep" onClose={onClose} className="codex">

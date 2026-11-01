@@ -2702,3 +2702,17 @@ h4 {
     font-size: 22px;
   }
 }
+
+/* booster tools */
+.item.k-tool {
+  background: radial-gradient(circle, rgba(255, 243, 176, 0.95), rgba(255, 243, 176, 0) 72%);
+}
+.item.k-tool .item-art {
+  animation: tool-glow 1.8s ease-in-out infinite;
+}
+@keyframes tool-glow {
+  50% {
+    transform: scale(1.06) rotate(-4deg);
+    filter: drop-shadow(0 0 4px #ffd23f);
+  }
+}
