@@ -472,7 +472,7 @@ export function SettingsModal({ onClose, onReset }) {
           </div>
         )}
         <BackupPanel onRestored={onReset} />
-        <p className="muted small center">Kafe Kucing Zorro · v2.2 · progres tersimpan otomatis di perangkat ini</p>
+        <p className="muted small center">Kafe Kucing Zorro · v2.3 · progres tersimpan otomatis di perangkat ini</p>
       </div>
     </Modal>
   );

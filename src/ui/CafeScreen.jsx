@@ -12,7 +12,7 @@ import { sfx } from '../game/audio';
 
 const IMG_RATIO = 1376 / 768;
 
-function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet, outfits }) {
+function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet, outfits, styleId }) {
   const scrollRef = useRef(null);
   const [h, setH] = useState(400);
   const w = Math.round(h * IMG_RATIO);
@@ -60,7 +60,8 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
   return (
     <div className="room-scroll" ref={scrollRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}>
       <div className="room" style={{ width: w, height: h }}>
-        <div className={`room-dust ${complete ? 'clean' : ''}`} style={{ backgroundImage: bg }} />
+        <div className={`room-dust ${complete ? 'clean' : ''} style-${complete ? styleId || 'asli' : 'asli'}`} style={{ backgroundImage: bg }} />
+        {complete && styleId === 'malam' && <div className="room-night" />}
         {!complete && <div className="room-grime" />}
         {!complete &&
           area.tasks
@@ -133,8 +134,43 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
   );
 }
 
+const ROOM_STYLES = [
+  { id: 'asli', name: 'Asli' },
+  { id: 'pastel', name: 'Pastel' },
+  { id: 'senja', name: 'Senja' },
+  { id: 'malam', name: 'Malam' },
+];
+
+function setRoomStyle(s, areaId, id) {
+  s.roomStyle ||= {};
+  s.roomStyle[areaId] = id;
+  return true;
+}
+
+function GoalBanner({ area, done, coins, onTask, onPlay }) {
+  const next = area.tasks.filter((t) => !done.includes(t.id)).sort((a, b) => a.cost - b.cost)[0];
+  if (!next) return null;
+  const ok = coins >= next.cost;
+  return (
+    <button type="button" className={`goal ${ok ? 'ok' : ''}`} onClick={() => (sfx('tap'), ok ? onTask(next) : onPlay())}>
+      <Icon name="star" size={26} />
+      <span className="goal-main">
+        <b>{next.name}</b>
+        <span className="goal-bar">
+          <span style={{ width: `${Math.min(100, (coins / next.cost) * 100)}%` }} />
+          <small>
+            <Icon name="coin" size={12} />
+            {Math.min(coins, next.cost)}/{next.cost}
+          </small>
+        </span>
+      </span>
+      <span className="goal-cta">{ok ? 'Renovasi!' : 'Cari koin'}</span>
+    </button>
+  );
+}
+
 export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
-  const { state } = useGameCtx();
+  const { state, act } = useGameCtx();
   const [justDone, setJustDone] = useState(null);
   const ai = Math.min(viewArea, state.areaIdx);
   const area = AREAS[ai];
@@ -182,9 +218,24 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         </button>
       </div>
 
-      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('care')} outfits={state.wardrobe?.outfit} />
+      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('care')} outfits={state.wardrobe?.outfit} styleId={state.roomStyle?.[area.id]} />
 
-      {complete && <div className="area-done">✨ Ruangan selesai direnovasi! ✨</div>}
+      {complete && (
+        <div className="area-done">
+          <span>✨ Selesai! Gaya:</span>
+          {ROOM_STYLES.map((st) => (
+            <button
+              type="button"
+              key={st.id}
+              className={`style-dot style-swatch-${st.id} ${(state.roomStyle?.[area.id] || 'asli') === st.id ? 'on' : ''}`}
+              title={st.name}
+              aria-label={st.name}
+              onClick={() => (sfx('pop'), act(setRoomStyle, area.id, st.id))}
+            />
+          ))}
+        </div>
+      )}
+      {!complete && ai === state.areaIdx && state.tut >= 99 && <GoalBanner area={area} done={done} coins={state.coins} onTask={(t) => onTask(ai, t)} onPlay={() => onNav('board')} />}
 
       <div className="side-btns">
         <button type="button" className="round-btn" onClick={() => onNav('daily')} aria-label="Hadiah harian">

@@ -9,6 +9,7 @@ import { PETS, heartsFor, MAX_HEARTS } from './pets';
 import { COSTUMES } from './costumes';
 import { recipe, masteryOf, rushCost } from './kitchen';
 import { SPOTS, SPOT_MAX, spotTime, upgradeCost } from './village';
+import { REP_TIERS, REVIEW_LINES } from './guestbook';
 import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
@@ -532,6 +533,10 @@ export function serve(s, orderUid, emit) {
   s.orders.splice(oi, 1);
   s.stats.served++;
   if (o.vip) s.stats.vip = (s.stats.vip || 0) + 1;
+  // leave a review in the guestbook (keep the latest 20)
+  const chain = item(o.items[o.items.length - 1]).chain;
+  const lines = Math.random() < 0.3 ? REVIEW_LINES.any : REVIEW_LINES[chain] || REVIEW_LINES.any;
+  s.reviews = [{ cat: o.cat, text: lines[Math.floor(Math.random() * lines.length)], stars: o.vip ? 5 : 4 + (Math.random() < 0.6 ? 1 : 0), t: Date.now(), vip: !!o.vip }, ...(s.reviews || [])].slice(0, 20);
   festPoints(s, 1 + o.items.length + (o.vip ? 3 : 0), emit, { order: o.uid });
   questProgress(s, 'serve');
   giveCurrency(s, { coins: o.coins, xp: o.xp, gems: o.gems || 0 }, emit, { order: o.uid });
@@ -938,6 +943,16 @@ export function upgradeSpot(s, id, emit) {
   s.coins -= cost;
   v.lv++;
   emit('spotUp', { id, lv: v.lv });
+  return true;
+}
+
+export function claimRep(s, i, emit) {
+  const t = REP_TIERS[i];
+  s.repClaimed ||= [];
+  if (!t || !t.r || s.repClaimed.includes(i) || s.stats.served < t.at) return false;
+  s.repClaimed.push(i);
+  giveCurrency(s, t.r, emit);
+  if (t.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: t.r.item });
   return true;
 }
 

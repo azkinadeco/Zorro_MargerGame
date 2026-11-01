@@ -5,6 +5,7 @@ import { anyPetReady } from './Pets';
 import { wheelReady } from './Wheel';
 import { careReady } from './Care';
 import { kitchenReady } from './Kitchen';
+import { repReady } from './Guestbook';
 import { festClaimable, achClaimable, FEST_LEVEL } from '../game/meta';
 import { sfx } from '../game/audio';
 
@@ -17,6 +18,7 @@ export const ACTIVITIES = [
   { key: 'wheel', name: 'Roda Hoki', sub: 'Putar gratis', icon: 'wheel', ready: wheelReady },
   { key: 'fest', name: 'Festival', sub: 'Hadiah mingguan', icon: 'tent', ready: (s) => festClaimable(s) > 0, level: FEST_LEVEL },
   { key: 'ach', name: 'Prestasi', sub: 'Trofi & permata', icon: 'trophy', ready: (s) => achClaimable(s) > 0 },
+  { key: 'guestbook', name: 'Buku Tamu', sub: 'Reputasi & ulasan', icon: 'quest', ready: repReady },
   { key: 'codex', name: 'Buku Resep', sub: 'Koleksi item', icon: 'book', ready: (s) => Object.values(s.discovered).some((v) => v === 1) },
   { key: 'album', name: 'Album Foto', sub: 'Kenangan kucing', icon: 'photo' },
 ];

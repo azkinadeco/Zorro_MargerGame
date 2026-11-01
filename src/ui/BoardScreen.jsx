@@ -6,6 +6,7 @@ import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble,
 import { fmtTime } from './common';
 import { festClaimable, FEST_LEVEL } from '../game/meta';
 import { recipe } from '../game/kitchen';
+import { NinaHelper } from './Nina';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
 import { CatArt } from '../art/CatArt';
 import { CUSTOMERS } from '../game/config';
@@ -500,6 +501,7 @@ export function BoardScreen({ onNav, tutStep }) {
     <div className="screen board-screen">
       <OrdersBar board={state.board} orders={state.orders} onServe={onServe} onSwap={(uid) => act(swapOrder, uid)} canSwap={state.tut >= 99} />
       <div className="board-wrap" ref={wrapRef}>
+        {state.tut >= 99 && <NinaHelper />}
         <div className="board-chips">
         {state.kitchen?.slot && <KitchenChip slot={state.kitchen.slot} onClick={() => onNav('kitchen')} />}
         {state.level >= FEST_LEVEL && (

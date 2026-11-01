@@ -17,9 +17,10 @@ import { WardrobeModal } from './ui/Wardrobe';
 import { CareModal } from './ui/Care';
 import { KitchenModal } from './ui/Kitchen';
 import { VillageView } from './ui/Village';
+import { GuestbookModal } from './ui/Guestbook';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care', 'kitchen'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care', 'kitchen', 'guestbook'];
 
 function Title({ onStart, returning }) {
   return (
@@ -294,6 +295,7 @@ function Game({ onReset }) {
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
           {modal === 'hub' && <HubModal onClose={() => setModal(null)} onNav={nav} />}
+          {modal === 'guestbook' && <GuestbookModal onClose={() => setModal('hub')} />}
           {modal === 'kitchen' && <KitchenModal onClose={() => setModal(null)} />}
           {modal === 'care' && <CareModal onClose={() => setModal(null)} />}
           {modal === 'wardrobe' && <WardrobeModal onClose={() => setModal('hub')} />}

@@ -15,8 +15,17 @@ Nina mewarisi kafe tua milik Neneknya, dan bersama Zorro si kucing tuxedo, kalia
 6. **Festival mingguan**: kumpulkan poin dari pesanan dan renovasi untuk 12 hadiah yang berganti tema setiap minggu.
 7. **Prestasi**: 10 pencapaian bertingkat dengan hadiah permata.
 
-Fitur lain: kode cadangan untuk pindah progres antar perangkat (Pengaturan), jalur hadiah level, pelanggan VIP berbatas waktu (koin ganda + permata), ganti pesanan dengan 1 permata, petunjuk merge otomatis saat diam, kotak misteri & sarang laba-laba di papan, gelembung bonus, gudang, tombol hadiah, naik level dengan generator baru,
-misi harian, hadiah login 7 hari, buku resep (koleksi item), toko, energi yang terisi sendiri, musik & efek suara (Web Audio), tutorial interaktif, dan simpan otomatis di perangkat.
+### Aktivitas tambahan
+- **Dapur Resep**: masak 7 menu spesial dari bahan papan, naik peringkat Perunggu/Perak/Emas.
+- **Peta Desa**: 8 tetangga mengirim bahan, koin, energi, dan permata secara berkala; bisa ditingkatkan.
+- **Rawat Kucing**: mini-game Elus & Manja dan Salon Spa.
+- **Lemari Kostum**: 12 kostum untuk Zorro, Loki, dan Thor yang terlihat di kafe.
+- **Roda Keberuntungan**: putaran gratis harian.
+- **Buku Tamu**: tingkat reputasi kafe dan ulasan pelanggan.
+- **Booster**: Paw Ajaib (naik satu level) dan Gunting Ajaib (pecah jadi dua).
+- **Nina** di papan memberi tips sesuai situasi; banner tujuan renovasi di kafe; 4 gaya warna untuk ruangan yang selesai.
+
+Fitur lain: kode cadangan untuk pindah progres antar perangkat (Pengaturan), jalur hadiah level, pelanggan VIP berbatas waktu, ganti pesanan, petunjuk merge otomatis, kotak misteri & sarang laba-laba, gelembung bonus, gudang, misi harian, hadiah login 7 hari, buku resep, toko, energi regen, musik & efek suara, tutorial interaktif, simpan otomatis.
 
 ## Struktur kode
 
