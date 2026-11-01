@@ -4,12 +4,14 @@ import { useGameCtx } from '../game/useGame';
 import { anyPetReady } from './Pets';
 import { wheelReady } from './Wheel';
 import { careReady } from './Care';
+import { kitchenReady } from './Kitchen';
 import { festClaimable, achClaimable, FEST_LEVEL } from '../game/meta';
 import { sfx } from '../game/audio';
 
 // Every side activity in one tidy grid. Extra entries register here.
 export const ACTIVITIES = [
   { key: 'pets', name: 'Teman Kucing', sub: 'Beri camilan', icon: 'cat', ready: anyPetReady },
+  { key: 'kitchen', name: 'Dapur Resep', sub: 'Masak menu spesial', art: 'genbread_2', ready: (s) => kitchenReady(s), level: 2 },
   { key: 'care', name: 'Rawat Kucing', sub: 'Elus & salon', icon: 'heart', ready: careReady },
   { key: 'wardrobe', name: 'Lemari Kostum', sub: 'Dandani kucing', icon: 'crown' },
   { key: 'wheel', name: 'Roda Hoki', sub: 'Putar gratis', icon: 'wheel', ready: wheelReady },

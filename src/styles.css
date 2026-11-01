@@ -3086,3 +3086,184 @@ h4 {
   background: radial-gradient(circle at 40% 35%, rgba(160, 122, 82, 0.95), rgba(107, 74, 43, 0.9) 60%, rgba(107, 74, 43, 0.5) 100%);
   border-radius: 58% 42% 63% 37% / 46% 61% 39% 54%;
 }
+
+/* kitchen */
+.board-chips {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 6;
+  display: flex;
+  gap: 6px;
+}
+.board-chips .fest-float {
+  position: static;
+}
+.kitchen-chip {
+  background: #fff3e6 !important;
+}
+.kitchen-chip.ready {
+  background: #eaf8e1 !important;
+  border-color: var(--green-d) !important;
+  animation: serve-pulse 1s ease-in-out infinite;
+}
+.chip-art {
+  width: 24px;
+  height: 24px;
+}
+.dish {
+  position: relative;
+  display: inline-block;
+  width: 54px;
+  height: 54px;
+  flex: none;
+}
+.dish.big {
+  width: 92px;
+  height: 92px;
+}
+.dish-plate {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 4%;
+  height: 34%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, #fff 0 45%, var(--tint) 46% 70%, #fff 71%);
+  border: 2.5px solid var(--ink);
+}
+.dish-food {
+  position: absolute;
+  inset: 0 12% 18% 12%;
+}
+.oven {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 3px solid var(--ink);
+  background: linear-gradient(#8fd3c0, #6fbfa8);
+  box-shadow: 0 4px 0 #4e9a84;
+}
+.oven-window {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 118px;
+  height: 108px;
+  flex: none;
+  border-radius: 14px;
+  border: 3px solid var(--ink);
+  background: radial-gradient(circle, #5b3a29, #3b2a20);
+  overflow: hidden;
+}
+.oven.baking .oven-window {
+  background: radial-gradient(circle, #ffb347, #c96a1c);
+}
+.oven.ready .oven-window {
+  background: radial-gradient(circle, #fff3b0, #f5c542);
+}
+.oven-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 100%, rgba(255, 220, 120, 0.6), transparent 70%);
+  animation: steam 1.6s ease-in-out infinite;
+}
+.oven.baking .dish {
+  animation: bob 1.4s ease-in-out infinite;
+}
+.oven-empty {
+  color: #e8d5c4;
+  font: 700 13px var(--font-head);
+}
+.oven-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  color: #23443a;
+}
+.oven-side b {
+  font: 700 16px var(--font-head);
+}
+.oven-side small {
+  font-weight: 800;
+}
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.recipe {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.recipe.locked {
+  opacity: 0.55;
+}
+.recipe.locked .dish-food {
+  filter: brightness(0) opacity(0.25);
+}
+.recipe-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.recipe-main b {
+  font: 700 14px var(--font-head);
+}
+.recipe-needs {
+  display: flex;
+  gap: 3px;
+}
+.need {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 1px;
+  border-radius: 9px;
+  background: #f6ead9;
+}
+.need.have {
+  background: #d6f0c8;
+}
+.recipe-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.rank {
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: #ead6bd;
+  color: var(--ink);
+}
+.rank-Perunggu {
+  background: #f0c59a;
+}
+.rank-Perak {
+  background: #d8dee6;
+}
+.rank-Emas {
+  background: #ffd95e;
+}
+.recipe-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font: 700 11px var(--font-head);
+}

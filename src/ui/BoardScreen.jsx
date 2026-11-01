@@ -5,6 +5,7 @@ import { useGameCtx } from '../game/useGame';
 import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, canTool, swapOrder, SWAP_COST } from '../game/engine';
 import { fmtTime } from './common';
 import { festClaimable, FEST_LEVEL } from '../game/meta';
+import { recipe } from '../game/kitchen';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
 import { CatArt } from '../art/CatArt';
 import { CUSTOMERS } from '../game/config';
@@ -437,6 +438,20 @@ function InfoPanel({ state, act, selIdx, onSell }) {
   );
 }
 
+function KitchenChip({ slot, onClick }) {
+  const now = useNow(1000);
+  const r = recipe(slot.id);
+  const left = Math.max(0, slot.done - now);
+  return (
+    <button type="button" className={`fest-float kitchen-chip ${left ? '' : 'ready'}`} onClick={onClick} aria-label="Dapur">
+      <span className="chip-art">
+        <ItemArt id={r.plate} />
+      </span>
+      <span>{left ? fmtTime(left) : 'Siap!'}</span>
+    </button>
+  );
+}
+
 // ------------------------------------------------------------------ screen
 export function BoardScreen({ onNav, tutStep }) {
   const { state, act, ref: gameRef } = useGameCtx();
@@ -485,6 +500,8 @@ export function BoardScreen({ onNav, tutStep }) {
     <div className="screen board-screen">
       <OrdersBar board={state.board} orders={state.orders} onServe={onServe} onSwap={(uid) => act(swapOrder, uid)} canSwap={state.tut >= 99} />
       <div className="board-wrap" ref={wrapRef}>
+        <div className="board-chips">
+        {state.kitchen?.slot && <KitchenChip slot={state.kitchen.slot} onClick={() => onNav('kitchen')} />}
         {state.level >= FEST_LEVEL && (
           <button type="button" className="fest-float" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
             <Icon name="tent" size={26} />
@@ -492,6 +509,7 @@ export function BoardScreen({ onNav, tutStep }) {
             {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
           </button>
         )}
+        </div>
         <div className="board-frame">
           <Board state={state} act={act} gameRef={gameRef} selected={selected} setSelected={setSelected} cellSize={cellSize} tut={tut} />
         </div>

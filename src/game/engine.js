@@ -7,6 +7,7 @@ import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
 import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
 import { COSTUMES } from './costumes';
+import { recipe, masteryOf, rushCost } from './kitchen';
 import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
@@ -103,6 +104,7 @@ export function newGame() {
     fest: null,
     ach: {},
     wardrobe: { owned: [], outfit: {} },
+    kitchen: { slot: null, mastery: {} },
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
@@ -821,6 +823,79 @@ export function equipCostume(s, cat, id, emit) {
   const o = (s.wardrobe.outfit[cat] ||= {});
   o[c.slot] = o[c.slot] === id ? null : id;
   emit('equip', { cat, id });
+  return true;
+}
+
+// ---------------------------------------------------------------- kitchen
+function ensureKitchen(s) {
+  s.kitchen ||= { slot: null, mastery: {} };
+  return s.kitchen;
+}
+
+// Where each recipe ingredient would come from: [{board:i}|{storage:j}] or null
+export function findIngredients(s, needs) {
+  const usedB = new Set();
+  const usedS = new Set();
+  const out = [];
+  for (const id of needs) {
+    const bi = s.board.findIndex((c, i) => c && !c.st && !c.bubble && c.id === id && !usedB.has(i));
+    if (bi >= 0) {
+      usedB.add(bi);
+      out.push({ board: bi });
+      continue;
+    }
+    const si = s.storage.findIndex((x, j) => x === id && !usedS.has(j));
+    if (si >= 0) {
+      usedS.add(si);
+      out.push({ storage: si });
+      continue;
+    }
+    out.push(null);
+  }
+  return out;
+}
+
+export function startCook(s, rid, emit) {
+  const k = ensureKitchen(s);
+  const r = recipe(rid);
+  if (!r || k.slot || s.level < r.level) return false;
+  const src = findIngredients(s, r.needs);
+  if (src.some((x) => !x)) return false;
+  src.filter((x) => x.board !== undefined).forEach((x) => (s.board[x.board] = null));
+  src
+    .filter((x) => x.storage !== undefined)
+    .map((x) => x.storage)
+    .sort((a, b) => b - a)
+    .forEach((j) => s.storage.splice(j, 1));
+  k.slot = { id: rid, done: Date.now() + r.time };
+  emit('cookStart', { id: rid });
+  return true;
+}
+
+export function rushCook(s, emit) {
+  const k = ensureKitchen(s);
+  if (!k.slot) return false;
+  const left = k.slot.done - Date.now();
+  if (left <= 0) return false;
+  const cost = rushCost(left);
+  if (s.gems < cost) return emit('needGems'), false;
+  s.gems -= cost;
+  k.slot.done = Date.now();
+  return true;
+}
+
+export function collectCook(s, emit) {
+  const k = ensureKitchen(s);
+  if (!k.slot || k.slot.done > Date.now()) return false;
+  const r = recipe(k.slot.id);
+  const count = k.mastery[r.id] || 0;
+  const m = masteryOf(count);
+  k.slot = null;
+  k.mastery[r.id] = count + 1;
+  s.stats.cooked = (s.stats.cooked || 0) + 1;
+  giveCurrency(s, { coins: Math.round(r.coins * (1 + m.bonus)), xp: r.xp }, emit);
+  festPoints(s, 3, emit);
+  emit('cookDone', { id: r.id, rankUp: masteryOf(count + 1).name !== m.name ? masteryOf(count + 1).name : null });
   return true;
 }
 

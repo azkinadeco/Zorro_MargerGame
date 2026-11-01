@@ -15,9 +15,10 @@ import { HubModal } from './ui/Hub';
 import { WheelModal } from './ui/Wheel';
 import { WardrobeModal } from './ui/Wardrobe';
 import { CareModal } from './ui/Care';
+import { KitchenModal } from './ui/Kitchen';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care', 'kitchen'];
 
 function Title({ onStart, returning }) {
   return (
@@ -69,6 +70,9 @@ function Game({ onReset }) {
             break;
           case 'move':
             sfx('move');
+            break;
+          case 'cookDone':
+            if (d.rankUp) bus.emit({ t: 'toast', d: { text: `Peringkat resep naik: ${d.rankUp}!` } });
             break;
           case 'costume':
           case 'equip':
@@ -277,6 +281,7 @@ function Game({ onReset }) {
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
           {modal === 'hub' && <HubModal onClose={() => setModal(null)} onNav={nav} />}
+          {modal === 'kitchen' && <KitchenModal onClose={() => setModal(null)} />}
           {modal === 'care' && <CareModal onClose={() => setModal(null)} />}
           {modal === 'wardrobe' && <WardrobeModal onClose={() => setModal('hub')} />}
           {modal === 'wheel' && <WheelModal onClose={() => setModal('hub')} />}
