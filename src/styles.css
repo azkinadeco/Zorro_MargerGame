@@ -2625,3 +2625,80 @@ h4 {
   font-weight: 800;
   color: var(--blue-d);
 }
+
+/* compact layout for short phones (iPhone SE, small Android) */
+@media (max-height: 700px) {
+  .topbar {
+    padding-top: calc(var(--safe-t) + 5px);
+    padding-bottom: 5px;
+  }
+  .orders {
+    padding-top: 22px;
+    padding-bottom: 6px;
+  }
+  .order {
+    padding: 18px 3px 4px;
+  }
+  .order-cat {
+    width: 34px;
+    height: 34px;
+    top: -17px;
+  }
+  .order-name {
+    display: none;
+  }
+  .order-item,
+  .order-items.n3 .order-item {
+    width: 34px;
+    height: 34px;
+  }
+  .order-reward {
+    height: 22px;
+    margin-top: 2px;
+  }
+  .order-serve {
+    min-height: 26px;
+    margin-top: 2px;
+  }
+  .vip-crown {
+    top: -30px;
+  }
+  .board-wrap {
+    padding: 4px;
+  }
+  .board-frame {
+    padding: 4px;
+  }
+  .info {
+    height: 54px;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+  }
+  .info-icon {
+    width: 42px;
+    height: 42px;
+  }
+  .info-text span {
+    -webkit-line-clamp: 1;
+  }
+  .bottombar,
+  .cafe-bottom {
+    padding-top: 4px;
+    padding-bottom: calc(var(--safe-b) + 4px);
+  }
+  .nav-btn .ico {
+    width: 26px;
+    height: 26px;
+  }
+  .gift-slot {
+    width: 28px;
+    height: 28px;
+  }
+  .nav-btn {
+    font-size: 11px;
+  }
+  .play-btn {
+    min-height: 50px;
+    font-size: 22px;
+  }
+}
