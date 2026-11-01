@@ -192,6 +192,52 @@ export function Icon({ name, size = 22, className = '' }) {
           <path d="M8 15 h20 l-5 -5 M32 25 h-20 l5 5" fill="none" stroke={O} strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
+    case 'tent':
+      return (
+        <svg {...p}>
+          <path d="M20 4 l15 14 v17 h-30 v-17z" fill="#fffaf2" stroke={O} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M5 18 l15 -14 l15 14 q-4 3 -7.5 0 q-3.75 3 -7.5 0 q-3.75 3 -7.5 0 q-3.5 3 -7.5 0z" fill="#f27ea0" stroke={O} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M14 35 q6 -14 12 0" fill="#e34f4f" stroke={O} strokeWidth="2.2" />
+          <path d="M20 4 v-2 l6 2 l-6 2" fill="#ffd23f" stroke={O} strokeWidth="1.6" />
+        </svg>
+      );
+    case 'trophy':
+      return (
+        <svg {...p}>
+          <path d="M11 5 h18 v8 q0 10 -9 12 q-9 -2 -9 -12z" fill="#ffd23f" stroke={O} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M11 8 h-5 q0 8 7 9 M29 8 h5 q0 8 -7 9" fill="none" stroke={O} strokeWidth="2.5" />
+          <path d="M17 25 h6 v5 h-6z M12 30 h16 v5 h-16z" fill="#c98a52" stroke={O} strokeWidth="2.2" strokeLinejoin="round" />
+          <path d="M15 9 v6" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+        </svg>
+      );
+    case 'menu':
+      return (
+        <svg {...p}>
+          <rect x="5" y="5" width="13" height="13" rx="4" fill="#f27ea0" stroke={O} strokeWidth="2.4" />
+          <rect x="22" y="5" width="13" height="13" rx="4" fill="#ffd23f" stroke={O} strokeWidth="2.4" />
+          <rect x="5" y="22" width="13" height="13" rx="4" fill="#6fbfa8" stroke={O} strokeWidth="2.4" />
+          <rect x="22" y="22" width="13" height="13" rx="4" fill="#9fd3e6" stroke={O} strokeWidth="2.4" />
+          <path d="M28.5 25 v7 M25 28.5 h7" stroke={O} strokeWidth="2.4" strokeLinecap="round" />
+        </svg>
+      );
+    case 'wheel':
+      return (
+        <svg {...p}>
+          <circle cx="20" cy="21" r="15" fill="#fff3c4" stroke={O} strokeWidth="2.5" />
+          <path d="M20 21 L20 6 A15 15 0 0 1 33 13.5z M20 21 L33 28.5 A15 15 0 0 1 20 36z M20 21 L7 28.5 A15 15 0 0 1 7 13.5z" fill="#f27ea0" stroke={O} strokeWidth="1.6" />
+          <circle cx="20" cy="21" r="4" fill="#ffd23f" stroke={O} strokeWidth="2" />
+          <path d="M16 2 h8 l-4 6z" fill="#e34f4f" stroke={O} strokeWidth="1.8" strokeLinejoin="round" />
+        </svg>
+      );
+    case 'map':
+      return (
+        <svg {...p}>
+          <path d="M4 9 l10 -4 l12 4 l10 -4 v26 l-10 4 l-12 -4 l-10 4z" fill="#d6f0c8" stroke={O} strokeWidth="2.4" strokeLinejoin="round" />
+          <path d="M14 5 v26 M26 9 v26" stroke={O} strokeWidth="2" />
+          <path d="M20 26 q-6 -6 -6 -10 a6 6 0 0 1 12 0 q0 4 -6 10z" fill="#e34f4f" stroke={O} strokeWidth="2" />
+          <circle cx="20" cy="16" r="2" fill="#fff" />
+        </svg>
+      );
     case 'sell':
       return <Icon name="coin" size={size} className={className} />;
     default:

@@ -885,7 +885,46 @@ export function WebArt() {
   );
 }
 
-const ART = { coffee, bread, cake, tea, treat, coin, energy, gem, chest };
+const joker = {
+  1: () => (
+    <>
+      <Shadow w={26} />
+      <circle cx="50" cy="52" r="36" fill="#fff3b0" opacity="0.6" stroke="none" />
+      <g transform="rotate(-12 50 52)">
+        <ellipse cx="50" cy="62" rx="20" ry="17" fill="#ffc531" />
+        <ellipse cx="28" cy="38" rx="8" ry="10" fill="#ffc531" />
+        <ellipse cx="42" cy="28" rx="8" ry="10" fill="#ffc531" />
+        <ellipse cx="58" cy="28" rx="8" ry="10" fill="#ffc531" />
+        <ellipse cx="72" cy="38" rx="8" ry="10" fill="#ffc531" />
+        <ellipse cx="50" cy="64" rx="11" ry="9" fill="#ffe08a" stroke="none" />
+        <path d="M36 54 q2 -6 8 -8" stroke="#fff" strokeWidth="3" fill="none" opacity="0.8" />
+      </g>
+      <Sparkle x={84} y={20} s={1.3} c="#ffd23f" />
+      <Sparkle x={16} y={70} s={0.9} c="#fff" />
+      <Sparkle x={82} y={80} s={0.7} c="#ffd23f" />
+    </>
+  ),
+};
+const scissors = {
+  1: () => (
+    <>
+      <Shadow w={26} />
+      <g transform="rotate(-35 50 50)">
+        <path d="M46 52 l-6 -42 q4 -4 8 0 l4 40z" fill="#d6e2ea" />
+        <path d="M54 52 l6 -42 q-4 -4 -8 0 l-4 40z" fill="#c2d0da" />
+        <circle cx="50" cy="52" r="4" fill="#8a8f99" />
+        <path d="M46 56 q-16 2 -16 16 q0 12 12 12 q12 0 10 -14z" fill="#f27ea0" />
+        <path d="M54 56 q16 2 16 16 q0 12 -12 12 q-12 0 -10 -14z" fill="#9b7bea" />
+        <circle cx="41" cy="72" r="5" fill="#fffaf2" />
+        <circle cx="59" cy="72" r="5" fill="#fffaf2" />
+        <path d="M44 14 l2 26" stroke="#fff" strokeWidth="2.4" opacity="0.9" />
+      </g>
+      <Sparkle x={82} y={22} s={1} c="#ffd23f" />
+    </>
+  ),
+};
+
+const ART = { coffee, bread, cake, tea, treat, coin, energy, gem, chest, joker, scissors };
 
 function ItemArtImpl({ id, className = 'art' }) {
   const [chain, t] = id.split('_');

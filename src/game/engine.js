@@ -6,6 +6,11 @@ import { VIP_MS, COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, 
 import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
 import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
+import { COSTUMES } from './costumes';
+import { recipe, masteryOf, rushCost } from './kitchen';
+import { SPOTS, SPOT_MAX, spotTime, upgradeCost } from './village';
+import { REP_TIERS, REVIEW_LINES } from './guestbook';
+import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
 
@@ -98,6 +103,11 @@ export function newGame() {
     seen: {},
     pendingLevel: [],
     pets: {},
+    fest: null,
+    ach: {},
+    wardrobe: { owned: [], outfit: {} },
+    kitchen: { slot: null, mastery: {} },
+    village: {},
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
@@ -209,7 +219,15 @@ export function tick(s, now, emit) {
   refreshDay(s);
 }
 
+function festPoints(s, n, emit, from) {
+  ensureFest(s);
+  if (s.level < FEST_LEVEL || n <= 0) return;
+  s.fest.pts += n;
+  emit('gain', { kind: 'fest', amount: n, from });
+}
+
 function refreshDay(s) {
+  ensureFest(s);
   const day = dayKey();
   if (!s.quests || s.quests.day !== day) s.quests = { day, list: makeDailyQuests(day, s.level) };
   if (s.shop.day !== day) {
@@ -250,6 +268,18 @@ export function spawn(s, from, emit) {
   return true;
 }
 
+// Can tool `a` be used on target cell `b`?
+export function canTool(a, b) {
+  if (!a || !b || a.uid === b.uid || b.st === 'box' || b.bubble) return false;
+  const ta = item(a.id);
+  if (ta.kind !== 'tool') return false;
+  const tb = item(b.id);
+  if (tb.kind !== 'food') return false;
+  if (a.id === 'joker_1') return !!nextId(b.id);
+  if (a.id === 'scissors_1') return tb.tier >= 2 && !b.st;
+  return false;
+}
+
 export function canMerge(a, b) {
   if (!a || !b || a.uid === b.uid) return false;
   if (a.st || a.bubble || b.st === 'box' || b.bubble) return false;
@@ -261,6 +291,24 @@ export function move(s, from, to, emit) {
   const a = s.board[from];
   const b = s.board[to];
   if (!a || a.st) return false;
+  if (canTool(a, b)) {
+    if (a.id === 'joker_1') {
+      const nid = nextId(b.id);
+      s.board[from] = null;
+      s.board[to] = { id: nid, uid: uid(), merged: true };
+      s.stats.merges++;
+      questProgress(s, 'merge');
+      discover(s, nid, emit);
+      emit('merge', { idx: to, id: nid, freed: b.st === 'web', tool: true });
+      return true;
+    }
+    // scissors: the tool's own cell receives the second half
+    const lower = `${item(b.id).chain}_${item(b.id).tier - 1}`;
+    s.board[to] = { id: lower, uid: uid(), merged: true };
+    s.board[from] = { id: lower, uid: uid(), from: to };
+    emit('split', { idx: to, id: lower });
+    return true;
+  }
   if (canMerge(a, b)) {
     const nid = nextId(a.id);
     s.board[from] = null;
@@ -484,6 +532,12 @@ export function serve(s, orderUid, emit) {
   for (const i of cells) s.board[i] = null;
   s.orders.splice(oi, 1);
   s.stats.served++;
+  if (o.vip) s.stats.vip = (s.stats.vip || 0) + 1;
+  // leave a review in the guestbook (keep the latest 20)
+  const chain = item(o.items[o.items.length - 1]).chain;
+  const lines = Math.random() < 0.3 ? REVIEW_LINES.any : REVIEW_LINES[chain] || REVIEW_LINES.any;
+  s.reviews = [{ cat: o.cat, text: lines[Math.floor(Math.random() * lines.length)], stars: o.vip ? 5 : 4 + (Math.random() < 0.6 ? 1 : 0), t: Date.now(), vip: !!o.vip }, ...(s.reviews || [])].slice(0, 20);
+  festPoints(s, 1 + o.items.length + (o.vip ? 3 : 0), emit, { order: o.uid });
   questProgress(s, 'serve');
   giveCurrency(s, { coins: o.coins, xp: o.xp, gems: o.gems || 0 }, emit, { order: o.uid });
   if (o.bonus) s.gifts.push(o.bonus);
@@ -564,8 +618,40 @@ export function feedPet(s, cat, emit) {
   return true;
 }
 
+export const CARE_COOLDOWN = 3 * 60 * 60 * 1000;
+
+export function careReadyIn(s, cat, mode, now = Date.now()) {
+  const t = s.care?.[cat]?.[mode] || 0;
+  return Math.max(0, t + CARE_COOLDOWN - now);
+}
+
+// mode: 'pet' (elus) or 'groom' (salon)
+export function finishCare(s, cat, mode, emit) {
+  if (!s.residents.includes(cat) || careReadyIn(s, cat, mode) > 0) return false;
+  ensurePets(s);
+  s.care ||= {};
+  (s.care[cat] ||= {})[mode] = Date.now();
+  const pet = s.pets[cat];
+  const before = heartsFor(pet.pts);
+  pet.pts += mode === 'groom' ? 8 : 5;
+  const after = heartsFor(pet.pts);
+  giveCurrency(s, mode === 'groom' ? { coins: 25 + s.level * 3, energy: 6 } : { energy: 8 }, emit);
+  for (let h = before + 1; h <= after; h++) {
+    const gems = 3 * h;
+    s.gems += gems;
+    emit('petHeart', { cat, hearts: h, gems, photo: PETS[cat].photos[h] || null });
+  }
+  emit('care', { cat, mode });
+  return true;
+}
+
 export function petMaxed(s, cat) {
   return heartsFor(s.pets?.[cat]?.pts || 0) >= MAX_HEARTS;
+}
+
+// Old saves: move past areas finished before new areas were added
+export function ensureAreaIdx(s) {
+  while (s.areaIdx < AREAS.length - 1 && (s.areas[AREAS[s.areaIdx].id] || []).length >= AREAS[s.areaIdx].tasks.length) s.areaIdx++;
 }
 
 // Old saves or reordered unlocks: every unlocked chain must own a generator
@@ -600,6 +686,7 @@ export function doTask(s, ai, taskId, emit) {
   s.coins -= t.cost;
   done.push(taskId);
   emit('task', { area: a.id, task: t });
+  festPoints(s, 2, emit);
   addXp(s, taskXp(t.cost), emit, { task: taskId });
   if (done.length === a.tasks.length) {
     const rew = a.reward;
@@ -629,6 +716,7 @@ export function claimLevel(s, emit) {
     } else s.gifts.push(`gen${ch}_1`);
   }
   s.gifts.push(...p.items);
+  ensureVillage(s);
   fillOrders(s);
   emit('gain', { kind: 'gems', amount: p.gems });
   emit('gain', { kind: 'energy', amount: p.energy });
@@ -666,6 +754,208 @@ export function claimCodex(s, id, emit) {
   return true;
 }
 
+export function claimFest(s, i, emit) {
+  ensureFest(s);
+  const m = FEST_TRACK[i];
+  if (!m || s.fest.claimed.includes(i) || s.fest.pts < m.pts) return false;
+  s.fest.claimed.push(i);
+  s.stats.festClaims = (s.stats.festClaims || 0) + 1;
+  giveCurrency(s, m.r, emit);
+  if (m.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: m.r.item });
+  return true;
+}
+
+export function claimAch(s, id, emit) {
+  const a = ACHIEVEMENTS.find((x) => x.id === id);
+  if (!a) return false;
+  const st = achState(s, a);
+  if (!st.ready) return false;
+  s.ach ||= {};
+  s.ach[id] = st.tier + 1;
+  giveCurrency(s, { gems: ACH_GEMS[st.tier] }, emit);
+  return true;
+}
+
+export function wheelState(s) {
+  const today = dayKey();
+  const w = s.wheel && s.wheel.day === today ? s.wheel : { day: today, free: true, extra: 0, pending: s.wheel?.pending ?? null };
+  return w;
+}
+
+export function spinWheel(s, emit) {
+  const w = wheelState(s);
+  if (w.pending !== null && w.pending !== undefined) return w.pending;
+  if (!w.free) {
+    if (w.extra >= WHEEL_EXTRA_MAX) return null;
+    if (s.gems < WHEEL_EXTRA_COST) return emit('needGems'), null;
+    s.gems -= WHEEL_EXTRA_COST;
+    w.extra++;
+  }
+  w.free = false;
+  const total = WHEEL.reduce((n, x) => n + x.w, 0);
+  let r = Math.random() * total;
+  let idx = 0;
+  while (r >= WHEEL[idx].w) r -= WHEEL[idx++].w;
+  w.pending = idx;
+  s.wheel = w;
+  return idx;
+}
+
+export function claimWheel(s, emit) {
+  const w = s.wheel;
+  if (!w || w.pending === null || w.pending === undefined) return false;
+  const slice = WHEEL[w.pending];
+  w.pending = null;
+  giveCurrency(s, slice.r, emit);
+  if (slice.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: slice.r.item });
+  return true;
+}
+
+export function buyCostume(s, id, emit) {
+  const c = COSTUMES.find((x) => x.id === id);
+  s.wardrobe ||= { owned: [], outfit: {} };
+  if (!c || s.wardrobe.owned.includes(id)) return false;
+  if (c.price.coins && s.coins < c.price.coins) return emit('needCoins', {}), false;
+  if (c.price.gems && s.gems < c.price.gems) return emit('needGems'), false;
+  s.coins -= c.price.coins || 0;
+  s.gems -= c.price.gems || 0;
+  s.wardrobe.owned.push(id);
+  emit('costume', { id });
+  return true;
+}
+
+export function equipCostume(s, cat, id, emit) {
+  const c = COSTUMES.find((x) => x.id === id);
+  s.wardrobe ||= { owned: [], outfit: {} };
+  if (!c || !s.wardrobe.owned.includes(id)) return false;
+  const o = (s.wardrobe.outfit[cat] ||= {});
+  o[c.slot] = o[c.slot] === id ? null : id;
+  emit('equip', { cat, id });
+  return true;
+}
+
+// ---------------------------------------------------------------- kitchen
+function ensureKitchen(s) {
+  s.kitchen ||= { slot: null, mastery: {} };
+  return s.kitchen;
+}
+
+// Where each recipe ingredient would come from: [{board:i}|{storage:j}] or null
+export function findIngredients(s, needs) {
+  const usedB = new Set();
+  const usedS = new Set();
+  const out = [];
+  for (const id of needs) {
+    const bi = s.board.findIndex((c, i) => c && !c.st && !c.bubble && c.id === id && !usedB.has(i));
+    if (bi >= 0) {
+      usedB.add(bi);
+      out.push({ board: bi });
+      continue;
+    }
+    const si = s.storage.findIndex((x, j) => x === id && !usedS.has(j));
+    if (si >= 0) {
+      usedS.add(si);
+      out.push({ storage: si });
+      continue;
+    }
+    out.push(null);
+  }
+  return out;
+}
+
+export function startCook(s, rid, emit) {
+  const k = ensureKitchen(s);
+  const r = recipe(rid);
+  if (!r || k.slot || s.level < r.level) return false;
+  const src = findIngredients(s, r.needs);
+  if (src.some((x) => !x)) return false;
+  src.filter((x) => x.board !== undefined).forEach((x) => (s.board[x.board] = null));
+  src
+    .filter((x) => x.storage !== undefined)
+    .map((x) => x.storage)
+    .sort((a, b) => b - a)
+    .forEach((j) => s.storage.splice(j, 1));
+  k.slot = { id: rid, done: Date.now() + r.time };
+  emit('cookStart', { id: rid });
+  return true;
+}
+
+export function rushCook(s, emit) {
+  const k = ensureKitchen(s);
+  if (!k.slot) return false;
+  const left = k.slot.done - Date.now();
+  if (left <= 0) return false;
+  const cost = rushCost(left);
+  if (s.gems < cost) return emit('needGems'), false;
+  s.gems -= cost;
+  k.slot.done = Date.now();
+  return true;
+}
+
+export function collectCook(s, emit) {
+  const k = ensureKitchen(s);
+  if (!k.slot || k.slot.done > Date.now()) return false;
+  const r = recipe(k.slot.id);
+  const count = k.mastery[r.id] || 0;
+  const m = masteryOf(count);
+  k.slot = null;
+  k.mastery[r.id] = count + 1;
+  s.stats.cooked = (s.stats.cooked || 0) + 1;
+  giveCurrency(s, { coins: Math.round(r.coins * (1 + m.bonus)), xp: r.xp }, emit);
+  festPoints(s, 3, emit);
+  emit('cookDone', { id: r.id, rankUp: masteryOf(count + 1).name !== m.name ? masteryOf(count + 1).name : null });
+  return true;
+}
+
+// ---------------------------------------------------------------- village
+export function spotState(s, id, now = Date.now()) {
+  const sp = SPOTS.find((x) => x.id === id);
+  const v = s.village?.[id];
+  if (!v) return { unlocked: s.level >= sp.level, lv: 0, ready: false, left: 0 };
+  const left = Math.max(0, v.next - now);
+  return { unlocked: true, lv: v.lv, ready: left === 0, left };
+}
+
+export function ensureVillage(s, now = Date.now()) {
+  s.village ||= {};
+  for (const sp of SPOTS) if (s.level >= sp.level && !s.village[sp.id]) s.village[sp.id] = { lv: 1, next: now + spotTime(sp, 1) / 3 };
+}
+
+export function collectSpot(s, id, emit) {
+  ensureVillage(s);
+  const sp = SPOTS.find((x) => x.id === id);
+  const v = s.village[id];
+  if (!sp || !v || v.next > Date.now()) return false;
+  const g = sp.gives(v.lv);
+  v.next = Date.now() + spotTime(sp, v.lv);
+  giveCurrency(s, g, emit, { spot: id });
+  if (g.items) emit('toast', { text: `${sp.name} mengirim hadiah! Ambil di papan.`, item: g.items[0] });
+  emit('spot', { id });
+  return true;
+}
+
+export function upgradeSpot(s, id, emit) {
+  ensureVillage(s);
+  const v = s.village[id];
+  if (!v || v.lv >= SPOT_MAX) return false;
+  const cost = upgradeCost(v.lv);
+  if (s.coins < cost) return emit('needCoins', { need: cost - s.coins }), false;
+  s.coins -= cost;
+  v.lv++;
+  emit('spotUp', { id, lv: v.lv });
+  return true;
+}
+
+export function claimRep(s, i, emit) {
+  const t = REP_TIERS[i];
+  s.repClaimed ||= [];
+  if (!t || !t.r || s.repClaimed.includes(i) || s.stats.served < t.at) return false;
+  s.repClaimed.push(i);
+  giveCurrency(s, t.r, emit);
+  if (t.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: t.r.item });
+  return true;
+}
+
 export function shopOffers(s) {
   const rng = seededRng('shop' + s.shop.day);
   const chains = unlockedChains(s.level);
@@ -677,6 +967,8 @@ export function shopOffers(s) {
     offers.push({ key: 'o' + i, id: it.id, price: { coins: it.value * 6 + 10 } });
   }
   offers.push({ key: 'chest', id: 'chest_1', price: { gems: 8 } });
+  offers.push({ key: 'joker', id: 'joker_1', price: { gems: 14 } });
+  offers.push({ key: 'scissors', id: 'scissors_1', price: { gems: 6 } });
   const gens = chains.slice(-2);
   gens.forEach((ch, i) => offers.push({ key: 'gen' + i, id: `gen${ch}_1`, price: { gems: 20 } }));
   return offers;

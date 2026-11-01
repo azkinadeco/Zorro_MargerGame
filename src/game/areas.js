@@ -162,8 +162,7 @@ export const AREAS = [
     ],
     outro: [
       [Z, 'Purrrrr… (Terima kasih, Nina. Rumah ini hidup lagi.)'],
-      [N, 'Kafe Kucing Zorro resmi selesai direnovasi! Tapi pelanggan masih terus datang…'],
-      [N, 'Ayo terus sajikan pesanan dan kumpulkan semua resep!'],
+      [N, 'Eh, ada pintu kecil di balik rak buku… menuju pojok herbal Nenek!'],
     ],
     reward: { gems: 50 },
     tasks: [
@@ -174,6 +173,58 @@ export const AREAS = [
       { id: 'garland', name: 'Lampu Tali Loteng', cost: 750, x: 50, y: 10, r: 20, line: [N, 'Seperti langit berbintang di dalam kamar.'] },
       { id: 'window', name: 'Jendela & Tanaman', cost: 800, x: 50, y: 40, r: 18, line: [N, 'Pemandangan desa terlihat sampai ke bukit.'] },
       { id: 'books', name: 'Rak Buku Nenek', cost: 900, x: 94, y: 50, r: 12, line: [N, 'Buku resep Nenek… semuanya masih utuh.'] },
+    ],
+  },
+  {
+    id: 'herbs',
+    name: 'Pojok Herbal',
+    bg: '/backgrounds/interact_cats.jpg',
+    cats: [{ id: 'zorro', x: 50, y: 74, w: 22 }],
+    intro: [
+      [N, 'Pojok ini penuh tanaman obat dan teh racikan Nenek.'],
+      [T, 'Mrr. (Baunya menenangkan. Aku suka tempat ini.)'],
+    ],
+    outro: [
+      [N, 'Pojok Herbal jadi tempat minum teh paling damai di desa.'],
+      [Z, 'Meong! (Nina, lihat meja tua di ujung sana… ada buku di atasnya!)'],
+    ],
+    reward: { gems: 60 },
+    tasks: [
+      { id: 'table', name: 'Meja Bundar Besar', cost: 950, x: 50, y: 80, r: 24, line: [N, 'Meja ini cukup untuk sepuluh pelanggan sekaligus!'] },
+      { id: 'window', name: 'Jendela & Tirai Renda', cost: 1020, x: 18, y: 32, r: 18, line: [N, 'Cahaya pagi menembus tirai renda.'] },
+      { id: 'monstera', name: 'Pot Monstera', cost: 1100, x: 6, y: 74, r: 12, line: [L, 'Mrrow! (Daunnya besar sekali, bisa buat sembunyi.)'] },
+      { id: 'books', name: 'Rak Buku & Teko', cost: 1180, x: 56, y: 32, r: 14, line: [N, 'Koleksi buku herbal Nenek tersusun rapi.'] },
+      { id: 'board', name: 'Papan Menu Kapur', cost: 1260, x: 68, y: 26, r: 10, line: [N, 'Menu hari ini: teh mint dan kue jahe.'] },
+      { id: 'lamps', name: 'Lampu Bohlam Gantung', cost: 1350, x: 88, y: 14, r: 14, line: [Z, 'Meong. (Hangat seperti sinar matahari sore.)'] },
+      { id: 'dishes', name: 'Rak Piring Antik', cost: 1450, x: 84, y: 56, r: 16, line: [N, 'Piring keramik Nenek masih utuh semua!'] },
+    ],
+  },
+  {
+    id: 'recipe',
+    name: 'Meja Resep Nenek',
+    bg: '/backgrounds/interact_upgrade_cats.jpg',
+    cats: [],
+    intro: [
+      [N, 'Ini meja kerja Nenek. Dan ini… buku resep rahasianya!'],
+      [Z, 'Meong. (Nenek selalu menulis di sini sambil mengelusku.)'],
+      [N, 'Ayo kita rapikan meja ini dan lanjutkan tulisan Nenek.'],
+    ],
+    outro: [
+      [N, 'Di halaman terakhir Nenek menulis: “Untuk Nina dan Zorro — jagalah kafe ini dengan cinta.”'],
+      [Z, 'Purrrr… (Kita sudah melakukannya, Nina.)'],
+      [L, 'Mrrow! (Tapi pelanggan tetap lapar!)'],
+      [T, 'Mrr. (Festival minggu depan juga menunggu.)'],
+      [N, 'Kafe Kucing Zorro resmi pulih sepenuhnya! Terima kasih sudah bermain — kafe akan terus buka untukmu.'],
+    ],
+    reward: { gems: 100 },
+    tasks: [
+      { id: 'book', name: 'Buku Resep Nenek', cost: 1600, x: 57, y: 70, r: 18, line: [N, 'Resep pertama: “Roti kucing untuk hari hujan.”'] },
+      { id: 'bunting', name: 'Bendera Segitiga', cost: 1700, x: 66, y: 16, r: 20, line: [N, 'Bendera kain warna-warni seperti di festival desa.'] },
+      { id: 'yarn', name: 'Keranjang Benang', cost: 1800, x: 36, y: 36, r: 12, line: [Z, 'Meong!! (BENANG! Boleh kumainkan?)'] },
+      { id: 'shelf', name: 'Rak Kecil Kayu', cost: 1900, x: 85, y: 50, r: 14, line: [N, 'Rak mungil berisi gulungan renda dan stiker.'] },
+      { id: 'plants', name: 'Tanaman Jendela', cost: 2050, x: 15, y: 30, r: 14, line: [N, 'Tanaman ivy Nenek tumbuh subur lagi.'] },
+      { id: 'ribbons', name: 'Kotak Pita & Renda', cost: 2200, x: 25, y: 62, r: 12, line: [L, 'Mrr? (Pita merah itu cocok untukku.)'] },
+      { id: 'brush', name: 'Sikat & Kancing', cost: 2400, x: 30, y: 82, r: 10, line: [N, 'Sikat bulu kesayangan Zorro. Semuanya lengkap.'] },
     ],
   },
 ];

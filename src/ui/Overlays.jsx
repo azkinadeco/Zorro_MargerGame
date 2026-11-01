@@ -103,7 +103,7 @@ export function Tutorial({ target, text, dragTo, pos, soft }) {
 
 // ---------------------------------------------------------------------- fx
 let fxId = 1;
-const HUD_ICON = { coins: 'coin', gems: 'gem', energy: 'energy', xp: 'xp' };
+const HUD_ICON = { coins: 'coin', gems: 'gem', energy: 'energy', xp: 'xp', fest: 'tent' };
 
 function rectOf(sel) {
   const el = document.querySelector(sel);
@@ -225,7 +225,7 @@ export function FX() {
         const cr = card;
         setTimeout(() => setBursts((x) => [...x, { id: fxId++, x: cr.left + cr.width / 2, y: cr.top + cr.height / 2, big: true }]), 520);
         sfx('serve');
-      } else if (t === 'merge' || t === 'unbox' || t === 'freeWeb' || t === 'popBubble' || t === 'chestOpen' || t === 'collect') {
+      } else if (t === 'merge' || t === 'split' || t === 'unbox' || t === 'freeWeb' || t === 'popBubble' || t === 'chestOpen' || t === 'collect') {
         const r = rectOf(`[data-cell="${d.idx}"]`);
         if (!r) return;
         const c = center(r);
@@ -233,7 +233,7 @@ export function FX() {
       } else if (t === 'task') {
         setBursts((x) => [...x, { id: fxId++, x: window.innerWidth / 2, y: window.innerHeight * 0.45, big: true }]);
       } else if (t === 'toast') {
-        addToast({ text: d.text });
+        addToast({ text: d.text, item: d.item });
       } else if (t === 'discover') {
         addToast({ text: `Resep baru: ${item(d.id).name}!`, item: d.id });
       } else if (t === 'needGems') {

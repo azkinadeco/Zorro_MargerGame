@@ -2,8 +2,11 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { COLS, ROWS } from '../game/config';
 import { item, nextId } from '../game/items';
 import { useGameCtx } from '../game/useGame';
-import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, swapOrder, SWAP_COST } from '../game/engine';
+import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, canTool, swapOrder, SWAP_COST } from '../game/engine';
 import { fmtTime } from './common';
+import { festClaimable, FEST_LEVEL } from '../game/meta';
+import { recipe } from '../game/kitchen';
+import { NinaHelper } from './Nina';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
 import { CatArt } from '../art/CatArt';
 import { CUSTOMERS } from '../game/config';
@@ -284,7 +287,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
     if (to < 0 || to === d.from) return;
     const a = state.board[d.from];
     const b = state.board[to];
-    if (b && !canMerge(a, b) && !b.st && !b.bubble) pendingFrom.set(b.uid, to);
+    if (b && !canMerge(a, b) && !canTool(a, b) && !b.st && !b.bubble) pendingFrom.set(b.uid, to);
     const ok = act(move, d.from, to);
     if (!ok) {
       if (b) pendingFrom.delete(b.uid);
@@ -302,7 +305,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
 
   const dragId = drag?.id;
   const overCell = drag ? state.board[drag.over] : null;
-  const canDrop = drag && drag.over >= 0 && drag.over !== drag.from && overCell && canMerge(state.board[drag.from], overCell);
+  const canDrop = drag && drag.over >= 0 && drag.over !== drag.from && overCell && (canMerge(state.board[drag.from], overCell) || canTool(state.board[drag.from], overCell));
 
   return (
     <div
@@ -333,7 +336,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
                   cellSize={cellSize}
                   selected={selected === cell.uid}
                   hidden={drag && drag.from === i}
-                  match={!!dragId && cell.id === dragId && drag.from !== i && !cell.bubble && !!nextId(cell.id)}
+                  match={!!dragId && drag.from !== i && ((cell.id === dragId && !cell.bubble && !!nextId(cell.id)) || canTool(state.board[drag.from], cell))}
                   wanted={!isGen && wanted.has(cell.id)}
                   now={hasBubble ? now : 0}
                   hinted={!!hintOk && !drag && (hint[0] === i || hint[1] === i)}
@@ -436,6 +439,20 @@ function InfoPanel({ state, act, selIdx, onSell }) {
   );
 }
 
+function KitchenChip({ slot, onClick }) {
+  const now = useNow(1000);
+  const r = recipe(slot.id);
+  const left = Math.max(0, slot.done - now);
+  return (
+    <button type="button" className={`fest-float kitchen-chip ${left ? '' : 'ready'}`} onClick={onClick} aria-label="Dapur">
+      <span className="chip-art">
+        <ItemArt id={r.plate} />
+      </span>
+      <span>{left ? fmtTime(left) : 'Siap!'}</span>
+    </button>
+  );
+}
+
 // ------------------------------------------------------------------ screen
 export function BoardScreen({ onNav, tutStep }) {
   const { state, act, ref: gameRef } = useGameCtx();
@@ -484,6 +501,17 @@ export function BoardScreen({ onNav, tutStep }) {
     <div className="screen board-screen">
       <OrdersBar board={state.board} orders={state.orders} onServe={onServe} onSwap={(uid) => act(swapOrder, uid)} canSwap={state.tut >= 99} />
       <div className="board-wrap" ref={wrapRef}>
+        {state.tut >= 99 && <NinaHelper />}
+        <div className="board-chips">
+        {state.kitchen?.slot && <KitchenChip slot={state.kitchen.slot} onClick={() => onNav('kitchen')} />}
+        {state.level >= FEST_LEVEL && (
+          <button type="button" className="fest-float" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
+            <Icon name="tent" size={26} />
+            <span>{state.fest?.pts || 0}</span>
+            {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
+          </button>
+        )}
+        </div>
         <div className="board-frame">
           <Board state={state} act={act} gameRef={gameRef} selected={selected} setSelected={setSelected} cellSize={cellSize} tut={tut} />
         </div>

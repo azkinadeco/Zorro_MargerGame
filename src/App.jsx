@@ -10,9 +10,17 @@ import { CafeScreen, TaskSheet } from './ui/CafeScreen';
 import { StorageModal, QuestsModal, DailyModal, CodexModal, ShopModal, EnergyModal, LevelUpModal, LevelInfoModal, TasksModal, SettingsModal } from './ui/Modals';
 import { Dialogue, Tutorial, FX } from './ui/Overlays';
 import { PetsModal, AlbumModal, HeartReward } from './ui/Pets';
+import { FestivalModal, AchievementsModal } from './ui/Meta';
+import { HubModal } from './ui/Hub';
+import { WheelModal } from './ui/Wheel';
+import { WardrobeModal } from './ui/Wardrobe';
+import { CareModal } from './ui/Care';
+import { KitchenModal } from './ui/Kitchen';
+import { VillageView } from './ui/Village';
+import { GuestbookModal } from './ui/Guestbook';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care', 'kitchen', 'guestbook'];
 
 function Title({ onStart, returning }) {
   return (
@@ -64,6 +72,21 @@ function Game({ onReset }) {
             break;
           case 'move':
             sfx('move');
+            break;
+          case 'cookDone':
+            if (d.rankUp) bus.emit({ t: 'toast', d: { text: `Peringkat resep naik: ${d.rankUp}!` } });
+            break;
+          case 'spot':
+          case 'spotUp':
+            sfx('coin');
+            break;
+          case 'costume':
+          case 'equip':
+            sfx('pop');
+            break;
+          case 'split':
+            sfx('unbox');
+            vibrate(vibe, 15);
             break;
           case 'unbox':
             sfx('unbox');
@@ -197,6 +220,12 @@ function Game({ onReset }) {
 
   const nav = (to) => {
     sfx('tap');
+    if (to === 'village') {
+      sfx('whoosh');
+      setModal(null);
+      setScreen('village');
+      return;
+    }
     if (to === 'board' || to === 'cafe') {
       sfx('whoosh');
       setModal(null);
@@ -248,7 +277,9 @@ function Game({ onReset }) {
           ) : (
             <>
               <TopBar onOpen={nav} />
-              {screen === 'board' ? (
+              {screen === 'village' ? (
+                <VillageView onClose={() => setScreen('cafe')} />
+              ) : screen === 'board' ? (
                 <BoardScreen onNav={nav} tutStep={state.tut} />
               ) : (
                 <CafeScreen onNav={nav} onTask={(ai, task) => setTaskSheet({ ai, task })} tutStep={state.tut} viewArea={viewArea} setViewArea={setViewArea} />
@@ -263,6 +294,14 @@ function Game({ onReset }) {
           {modal === 'shop' && <ShopModal onClose={() => setModal(null)} />}
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
+          {modal === 'hub' && <HubModal onClose={() => setModal(null)} onNav={nav} />}
+          {modal === 'guestbook' && <GuestbookModal onClose={() => setModal('hub')} />}
+          {modal === 'kitchen' && <KitchenModal onClose={() => setModal(null)} />}
+          {modal === 'care' && <CareModal onClose={() => setModal(null)} />}
+          {modal === 'wardrobe' && <WardrobeModal onClose={() => setModal('hub')} />}
+          {modal === 'wheel' && <WheelModal onClose={() => setModal('hub')} />}
+          {modal === 'fest' && <FestivalModal onClose={() => setModal(null)} />}
+          {modal === 'ach' && <AchievementsModal onClose={() => setModal(null)} />}
           {modal === 'pets' && <PetsModal onClose={() => setModal(null)} onAlbum={() => setModal('album')} />}
           {modal === 'album' && <AlbumModal onClose={() => setModal('pets')} />}
           {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} onReset={onReset} />}

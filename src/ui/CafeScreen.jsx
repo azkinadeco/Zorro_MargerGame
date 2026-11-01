@@ -3,12 +3,16 @@ import { AREAS, RESIDENTS, taskXp } from '../game/areas';
 import { useGameCtx, bus } from '../game/useGame';
 import { canClaimDaily } from '../game/engine';
 import { anyPetReady } from './Pets';
+import { CatFigure } from '../art/CostumeArt';
+import { festClaimable, FEST_LEVEL } from '../game/meta';
+import { hubReady } from './Hub';
+import { villageReady } from './Village';
 import { Icon, Btn, Bar } from './common';
 import { sfx } from '../game/audio';
 
 const IMG_RATIO = 1376 / 768;
 
-function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet }) {
+function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet, outfits, styleId }) {
   const scrollRef = useRef(null);
   const [h, setH] = useState(400);
   const w = Math.round(h * IMG_RATIO);
@@ -56,7 +60,8 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
   return (
     <div className="room-scroll" ref={scrollRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerLeave={onUp}>
       <div className="room" style={{ width: w, height: h }}>
-        <div className={`room-dust ${complete ? 'clean' : ''}`} style={{ backgroundImage: bg }} />
+        <div className={`room-dust ${complete ? 'clean' : ''} style-${complete ? styleId || 'asli' : 'asli'}`} style={{ backgroundImage: bg }} />
+        {complete && styleId === 'malam' && <div className="room-night" />}
         {!complete && <div className="room-grime" />}
         {!complete &&
           area.tasks
@@ -94,7 +99,7 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
                 }}
                 aria-label={r.name}
               >
-                <img src={r.img} alt={r.name} draggable="false" />
+                <CatFigure cat={c.id} outfit={outfits?.[c.id]} />
                 <span className="heart">♥</span>
               </button>
             );
@@ -129,8 +134,43 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
   );
 }
 
+const ROOM_STYLES = [
+  { id: 'asli', name: 'Asli' },
+  { id: 'pastel', name: 'Pastel' },
+  { id: 'senja', name: 'Senja' },
+  { id: 'malam', name: 'Malam' },
+];
+
+function setRoomStyle(s, areaId, id) {
+  s.roomStyle ||= {};
+  s.roomStyle[areaId] = id;
+  return true;
+}
+
+function GoalBanner({ area, done, coins, onTask, onPlay }) {
+  const next = area.tasks.filter((t) => !done.includes(t.id)).sort((a, b) => a.cost - b.cost)[0];
+  if (!next) return null;
+  const ok = coins >= next.cost;
+  return (
+    <button type="button" className={`goal ${ok ? 'ok' : ''}`} onClick={() => (sfx('tap'), ok ? onTask(next) : onPlay())}>
+      <Icon name="star" size={26} />
+      <span className="goal-main">
+        <b>{next.name}</b>
+        <span className="goal-bar">
+          <span style={{ width: `${Math.min(100, (coins / next.cost) * 100)}%` }} />
+          <small>
+            <Icon name="coin" size={12} />
+            {Math.min(coins, next.cost)}/{next.cost}
+          </small>
+        </span>
+      </span>
+      <span className="goal-cta">{ok ? 'Renovasi!' : 'Cari koin'}</span>
+    </button>
+  );
+}
+
 export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
-  const { state } = useGameCtx();
+  const { state, act } = useGameCtx();
   const [justDone, setJustDone] = useState(null);
   const ai = Math.min(viewArea, state.areaIdx);
   const area = AREAS[ai];
@@ -151,7 +191,6 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
   const tutTask = tutStep === 5 ? area.tasks[0].id : null;
   const dailyReady = canClaimDaily(state);
   const questReady = state.quests?.list.some((q) => q.progress >= q.target && !q.claimed);
-  const codexReady = Object.values(state.discovered).some((v) => v === 1);
 
   return (
     <div className="screen cafe-screen">
@@ -159,7 +198,7 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         <button type="button" className="area-arrow" disabled={ai <= 0} onClick={() => (sfx('tap'), setViewArea(ai - 1))} aria-label="Area sebelumnya">
           <Icon name="arrowL" size={22} />
         </button>
-        <div className="area-title">
+        <div className="area-title" role="button" onClick={() => onNav('tasks')}>
           <b>{area.name}</b>
           <div className="area-prog">
             <Bar value={done.length} max={area.tasks.length} />
@@ -179,25 +218,39 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         </button>
       </div>
 
-      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('pets')} />
+      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('care')} outfits={state.wardrobe?.outfit} styleId={state.roomStyle?.[area.id]} />
 
-      {complete && <div className="area-done">✨ Ruangan selesai direnovasi! ✨</div>}
+      {complete && (
+        <div className="area-done">
+          <span>✨ Selesai! Gaya:</span>
+          {ROOM_STYLES.map((st) => (
+            <button
+              type="button"
+              key={st.id}
+              className={`style-dot style-swatch-${st.id} ${(state.roomStyle?.[area.id] || 'asli') === st.id ? 'on' : ''}`}
+              title={st.name}
+              aria-label={st.name}
+              onClick={() => (sfx('pop'), act(setRoomStyle, area.id, st.id))}
+            />
+          ))}
+        </div>
+      )}
+      {!complete && ai === state.areaIdx && state.tut >= 99 && <GoalBanner area={area} done={done} coins={state.coins} onTask={(t) => onTask(ai, t)} onPlay={() => onNav('board')} />}
 
       <div className="side-btns">
         <button type="button" className="round-btn" onClick={() => onNav('daily')} aria-label="Hadiah harian">
           <Icon name="calendar" size={30} />
           {dailyReady && <i className="badge dot">!</i>}
         </button>
-        <button type="button" className="round-btn" onClick={() => onNav('codex')} aria-label="Koleksi resep">
-          <Icon name="book" size={30} />
-          {codexReady && <i className="badge dot">!</i>}
-        </button>
+        {state.level >= FEST_LEVEL && (
+          <button type="button" className="round-btn fest-btn" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
+            <Icon name="tent" size={32} />
+            {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
+          </button>
+        )}
         <button type="button" className="round-btn" onClick={() => onNav('pets')} aria-label="Teman kucing">
           <Icon name="cat" size={32} />
           {anyPetReady(state) && <i className="badge dot">!</i>}
-        </button>
-        <button type="button" className="round-btn" onClick={() => onNav('tasks')} aria-label="Daftar renovasi">
-          <Icon name="star" size={30} />
         </button>
         <button type="button" className="round-btn" onClick={() => onNav('settings')} aria-label="Pengaturan">
           <Icon name="gear" size={30} />
@@ -210,12 +263,22 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
           <span>Misi</span>
           {questReady && <i className="badge dot">!</i>}
         </button>
+        <button type="button" className="nav-btn" disabled={state.level < 2} onClick={() => onNav('village')}>
+          <Icon name="map" size={30} />
+          <span>{state.level < 2 ? 'Lv 2' : 'Peta'}</span>
+          {villageReady(state) && <i className="badge dot">!</i>}
+        </button>
         <Btn color="green" className="play-btn" data-tut="play" onClick={() => onNav('board')}>
           <Icon name="play" size={26} /> Main
         </Btn>
         <button type="button" className="nav-btn" onClick={() => onNav('shop')}>
           <Icon name="shop" size={30} />
           <span>Toko</span>
+        </button>
+        <button type="button" className="nav-btn hub-btn" onClick={() => onNav('hub')} aria-label="Aktivitas">
+          <Icon name="menu" size={30} />
+          <span>Aktivitas</span>
+          {hubReady(state) && <i className="badge dot">!</i>}
         </button>
       </nav>
     </div>
