@@ -6,6 +6,7 @@ import { VIP_MS, COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, 
 import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
 import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
+import { COSTUMES } from './costumes';
 import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
@@ -101,6 +102,7 @@ export function newGame() {
     pets: {},
     fest: null,
     ach: {},
+    wardrobe: { owned: [], outfit: {} },
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
@@ -769,6 +771,29 @@ export function claimWheel(s, emit) {
   w.pending = null;
   giveCurrency(s, slice.r, emit);
   if (slice.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: slice.r.item });
+  return true;
+}
+
+export function buyCostume(s, id, emit) {
+  const c = COSTUMES.find((x) => x.id === id);
+  s.wardrobe ||= { owned: [], outfit: {} };
+  if (!c || s.wardrobe.owned.includes(id)) return false;
+  if (c.price.coins && s.coins < c.price.coins) return emit('needCoins', {}), false;
+  if (c.price.gems && s.gems < c.price.gems) return emit('needGems'), false;
+  s.coins -= c.price.coins || 0;
+  s.gems -= c.price.gems || 0;
+  s.wardrobe.owned.push(id);
+  emit('costume', { id });
+  return true;
+}
+
+export function equipCostume(s, cat, id, emit) {
+  const c = COSTUMES.find((x) => x.id === id);
+  s.wardrobe ||= { owned: [], outfit: {} };
+  if (!c || !s.wardrobe.owned.includes(id)) return false;
+  const o = (s.wardrobe.outfit[cat] ||= {});
+  o[c.slot] = o[c.slot] === id ? null : id;
+  emit('equip', { cat, id });
   return true;
 }
 

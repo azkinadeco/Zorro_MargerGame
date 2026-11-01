@@ -7,6 +7,7 @@ import { PETS, MAX_HEARTS, heartRange, allPhotos, heartsFor } from '../game/pets
 import { AREAS } from '../game/areas';
 import { feedPet, findPetItem } from '../game/engine';
 import { sfx } from '../game/audio';
+import { CatFigure } from '../art/CostumeArt';
 
 function Hearts({ n, size = 18 }) {
   return (
@@ -56,7 +57,7 @@ export function PetsModal({ onClose, onAlbum }) {
         return (
           <div key={cat} className="pet-card">
             <div className={`pet-img ${bounce === cat ? 'pet-bounce' : ''}`}>
-              <img src={p.img} alt={p.name} draggable="false" />
+              <CatFigure cat={cat} outfit={state.wardrobe?.outfit?.[cat]} />
             </div>
             <div className="pet-info">
               <b>{p.name}</b>
@@ -147,11 +148,13 @@ export function AlbumModal({ onClose }) {
 
 export function HeartReward({ r, onDone }) {
   const p = PETS[r.cat];
+  const { state } = useGameCtx();
+  const outfit = state.wardrobe?.outfit?.[r.cat];
   return (
     <div className="modal-back levelup-back" onClick={onDone}>
       <div className="levelup heart-reward" onClick={(e) => e.stopPropagation()}>
         <div className="rays pink" />
-        <img className="heart-cat" src={p.img} alt={p.name} />
+        <CatFigure cat={r.cat} outfit={outfit} className="heart-cat" />
         <h2>
           {p.name} makin sayang!
         </h2>

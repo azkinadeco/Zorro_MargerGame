@@ -2849,3 +2849,108 @@ h4 {
   font: 700 16px var(--font-head);
   animation: modal-in 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
+
+/* costumes */
+.cat-fig {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+.cat-fig > img {
+  width: 100%;
+  display: block;
+}
+.costume {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25));
+}
+.resident .cat-fig {
+  width: 100%;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.35));
+  animation: breathe 3.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.resident .cat-fig > img {
+  filter: none;
+  animation: none;
+}
+.resident.pet .cat-fig {
+  animation: pet 0.5s ease-out;
+}
+.pet-img .cat-fig {
+  width: 100%;
+}
+.pet-img.pet-bounce .cat-fig {
+  animation: pet 0.6s ease-out;
+}
+.heart-cat.cat-fig {
+  position: relative;
+  width: 150px;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.4));
+  animation: pop-in 0.6s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+.wardrobe-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 210px;
+  padding: 26px 0 6px;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 92%, #e9c79a 0 28%, transparent 29%), linear-gradient(#fde2e8, #fff3e6);
+  border: 2.5px solid #ead6bd;
+}
+.wardrobe-stage .cat-fig {
+  height: 100%;
+  animation: pop-in 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.wardrobe-stage .cat-fig > img {
+  height: 100%;
+  width: auto;
+}
+.slot-tabs {
+  justify-content: center;
+}
+.costume-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.costume-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+  text-align: center;
+}
+.costume-tile.worn {
+  border-color: var(--pink);
+  background: #fff0f5;
+}
+.costume-tile b {
+  font: 700 12px/1.1 var(--font-head);
+  min-height: 26px;
+  display: flex;
+  align-items: center;
+}
+.costume-tile .btn {
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.costume-art {
+  width: 64px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+}
+.costume-icon {
+  width: 100%;
+  max-height: 100%;
+  overflow: visible;
+}

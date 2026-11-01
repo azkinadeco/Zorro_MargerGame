@@ -13,9 +13,10 @@ import { PetsModal, AlbumModal, HeartReward } from './ui/Pets';
 import { FestivalModal, AchievementsModal } from './ui/Meta';
 import { HubModal } from './ui/Hub';
 import { WheelModal } from './ui/Wheel';
+import { WardrobeModal } from './ui/Wardrobe';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe'];
 
 function Title({ onStart, returning }) {
   return (
@@ -67,6 +68,10 @@ function Game({ onReset }) {
             break;
           case 'move':
             sfx('move');
+            break;
+          case 'costume':
+          case 'equip':
+            sfx('pop');
             break;
           case 'split':
             sfx('unbox');
@@ -271,6 +276,7 @@ function Game({ onReset }) {
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
           {modal === 'hub' && <HubModal onClose={() => setModal(null)} onNav={nav} />}
+          {modal === 'wardrobe' && <WardrobeModal onClose={() => setModal('hub')} />}
           {modal === 'wheel' && <WheelModal onClose={() => setModal('hub')} />}
           {modal === 'fest' && <FestivalModal onClose={() => setModal(null)} />}
           {modal === 'ach' && <AchievementsModal onClose={() => setModal(null)} />}

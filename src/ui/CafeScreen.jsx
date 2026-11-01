@@ -3,6 +3,7 @@ import { AREAS, RESIDENTS, taskXp } from '../game/areas';
 import { useGameCtx, bus } from '../game/useGame';
 import { canClaimDaily } from '../game/engine';
 import { anyPetReady } from './Pets';
+import { CatFigure } from '../art/CostumeArt';
 import { festClaimable, FEST_LEVEL } from '../game/meta';
 import { hubReady } from './Hub';
 import { Icon, Btn, Bar } from './common';
@@ -10,7 +11,7 @@ import { sfx } from '../game/audio';
 
 const IMG_RATIO = 1376 / 768;
 
-function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet }) {
+function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet, outfits }) {
   const scrollRef = useRef(null);
   const [h, setH] = useState(400);
   const w = Math.round(h * IMG_RATIO);
@@ -96,7 +97,7 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, 
                 }}
                 aria-label={r.name}
               >
-                <img src={r.img} alt={r.name} draggable="false" />
+                <CatFigure cat={c.id} outfit={outfits?.[c.id]} />
                 <span className="heart">♥</span>
               </button>
             );
@@ -180,7 +181,7 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         </button>
       </div>
 
-      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('pets')} />
+      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('pets')} outfits={state.wardrobe?.outfit} />
 
       {complete && <div className="area-done">✨ Ruangan selesai direnovasi! ✨</div>}
 
