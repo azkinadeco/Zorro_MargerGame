@@ -6,6 +6,7 @@ import { anyPetReady } from './Pets';
 import { CatFigure } from '../art/CostumeArt';
 import { festClaimable, FEST_LEVEL } from '../game/meta';
 import { hubReady } from './Hub';
+import { villageReady } from './Village';
 import { Icon, Btn, Bar } from './common';
 import { sfx } from '../game/audio';
 
@@ -200,10 +201,6 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
           <Icon name="cat" size={32} />
           {anyPetReady(state) && <i className="badge dot">!</i>}
         </button>
-        <button type="button" className="round-btn hub-btn" onClick={() => onNav('hub')} aria-label="Aktivitas">
-          <Icon name="menu" size={30} />
-          {hubReady(state) && <i className="badge dot">!</i>}
-        </button>
         <button type="button" className="round-btn" onClick={() => onNav('settings')} aria-label="Pengaturan">
           <Icon name="gear" size={30} />
         </button>
@@ -215,12 +212,22 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
           <span>Misi</span>
           {questReady && <i className="badge dot">!</i>}
         </button>
+        <button type="button" className="nav-btn" disabled={state.level < 2} onClick={() => onNav('village')}>
+          <Icon name="map" size={30} />
+          <span>{state.level < 2 ? 'Lv 2' : 'Peta'}</span>
+          {villageReady(state) && <i className="badge dot">!</i>}
+        </button>
         <Btn color="green" className="play-btn" data-tut="play" onClick={() => onNav('board')}>
           <Icon name="play" size={26} /> Main
         </Btn>
         <button type="button" className="nav-btn" onClick={() => onNav('shop')}>
           <Icon name="shop" size={30} />
           <span>Toko</span>
+        </button>
+        <button type="button" className="nav-btn hub-btn" onClick={() => onNav('hub')} aria-label="Aktivitas">
+          <Icon name="menu" size={30} />
+          <span>Aktivitas</span>
+          {hubReady(state) && <i className="badge dot">!</i>}
         </button>
       </nav>
     </div>

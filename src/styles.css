@@ -3267,3 +3267,166 @@ h4 {
   align-items: center;
   font: 700 11px var(--font-head);
 }
+
+/* village */
+.village {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: #2b1d14;
+}
+.village-head {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.village-head .area-title {
+  cursor: default;
+  padding: 4px 10px 5px;
+}
+.village-head .area-title small {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.village-head .btn {
+  flex: none;
+  font-size: 13px;
+}
+.village-map {
+  position: relative;
+  background: url(/backgrounds/maps.jpg) 0 0 / 100% 100%;
+}
+.pin {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background: none;
+  padding: 0;
+}
+.pin-bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 5px;
+  border-radius: 50% 50% 50% 8px;
+  transform: rotate(-45deg);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+.pin-bubble > * {
+  transform: rotate(45deg);
+}
+.pin-bubble .art {
+  width: 36px;
+  height: 36px;
+}
+.pin-label {
+  margin-top: 6px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: rgba(59, 29, 14, 0.88);
+  color: #fff;
+  font: 700 12px var(--font-head);
+  white-space: nowrap;
+}
+.pin.ready .pin-bubble {
+  background: #fff3b0;
+  box-shadow: 0 0 0 5px rgba(255, 210, 63, 0.55), 0 0 18px 6px rgba(255, 210, 63, 0.7), 0 4px 0 rgba(0, 0, 0, 0.35);
+  animation: pin-bounce 1s ease-in-out infinite;
+}
+.pin.ready .pin-label {
+  background: var(--green-d);
+}
+@keyframes pin-bounce {
+  50% {
+    transform: rotate(-45deg) translate(4px, -4px);
+  }
+}
+.pin.locked {
+  opacity: 0.8;
+}
+.pin.locked .pin-bubble {
+  background: #d8cfc4;
+}
+.pin.on .pin-bubble {
+  border-color: var(--pink);
+}
+.spot-sheet {
+  position: absolute;
+  z-index: 6;
+  left: 10px;
+  right: 10px;
+  bottom: calc(var(--safe-b) + 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  animation: toast-in 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.spot-sheet b {
+  font: 700 18px var(--font-head);
+}
+.spot-sheet p {
+  margin: 0;
+}
+.spot-sheet .btn {
+  align-self: stretch;
+}
+.sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--red);
+  padding: 0;
+}
+.spot-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.spot-give {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-weight: 800;
+  font-size: 13px;
+}
+.dim-ico {
+  filter: grayscale(1) opacity(0.3);
+}
+.cafe-bottom .nav-btn {
+  flex: 1;
+}
+.cafe-bottom .play-btn {
+  flex: 1.5;
+  padding-left: 8px;
+  padding-right: 8px;
+}

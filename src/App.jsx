@@ -16,6 +16,7 @@ import { WheelModal } from './ui/Wheel';
 import { WardrobeModal } from './ui/Wardrobe';
 import { CareModal } from './ui/Care';
 import { KitchenModal } from './ui/Kitchen';
+import { VillageView } from './ui/Village';
 import { Btn } from './ui/common';
 
 const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel', 'wardrobe', 'care', 'kitchen'];
@@ -73,6 +74,10 @@ function Game({ onReset }) {
             break;
           case 'cookDone':
             if (d.rankUp) bus.emit({ t: 'toast', d: { text: `Peringkat resep naik: ${d.rankUp}!` } });
+            break;
+          case 'spot':
+          case 'spotUp':
+            sfx('coin');
             break;
           case 'costume':
           case 'equip':
@@ -214,6 +219,12 @@ function Game({ onReset }) {
 
   const nav = (to) => {
     sfx('tap');
+    if (to === 'village') {
+      sfx('whoosh');
+      setModal(null);
+      setScreen('village');
+      return;
+    }
     if (to === 'board' || to === 'cafe') {
       sfx('whoosh');
       setModal(null);
@@ -265,7 +276,9 @@ function Game({ onReset }) {
           ) : (
             <>
               <TopBar onOpen={nav} />
-              {screen === 'board' ? (
+              {screen === 'village' ? (
+                <VillageView onClose={() => setScreen('cafe')} />
+              ) : screen === 'board' ? (
                 <BoardScreen onNav={nav} tutStep={state.tut} />
               ) : (
                 <CafeScreen onNav={nav} onTask={(ai, task) => setTaskSheet({ ai, task })} tutStep={state.tut} viewArea={viewArea} setViewArea={setViewArea} />

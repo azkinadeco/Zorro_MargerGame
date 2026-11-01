@@ -8,6 +8,7 @@ import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor }
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
 import { COSTUMES } from './costumes';
 import { recipe, masteryOf, rushCost } from './kitchen';
+import { SPOTS, SPOT_MAX, spotTime, upgradeCost } from './village';
 import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
@@ -105,6 +106,7 @@ export function newGame() {
     ach: {},
     wardrobe: { owned: [], outfit: {} },
     kitchen: { slot: null, mastery: {} },
+    village: {},
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
@@ -709,6 +711,7 @@ export function claimLevel(s, emit) {
     } else s.gifts.push(`gen${ch}_1`);
   }
   s.gifts.push(...p.items);
+  ensureVillage(s);
   fillOrders(s);
   emit('gain', { kind: 'gems', amount: p.gems });
   emit('gain', { kind: 'energy', amount: p.energy });
@@ -896,6 +899,45 @@ export function collectCook(s, emit) {
   giveCurrency(s, { coins: Math.round(r.coins * (1 + m.bonus)), xp: r.xp }, emit);
   festPoints(s, 3, emit);
   emit('cookDone', { id: r.id, rankUp: masteryOf(count + 1).name !== m.name ? masteryOf(count + 1).name : null });
+  return true;
+}
+
+// ---------------------------------------------------------------- village
+export function spotState(s, id, now = Date.now()) {
+  const sp = SPOTS.find((x) => x.id === id);
+  const v = s.village?.[id];
+  if (!v) return { unlocked: s.level >= sp.level, lv: 0, ready: false, left: 0 };
+  const left = Math.max(0, v.next - now);
+  return { unlocked: true, lv: v.lv, ready: left === 0, left };
+}
+
+export function ensureVillage(s, now = Date.now()) {
+  s.village ||= {};
+  for (const sp of SPOTS) if (s.level >= sp.level && !s.village[sp.id]) s.village[sp.id] = { lv: 1, next: now + spotTime(sp, 1) / 3 };
+}
+
+export function collectSpot(s, id, emit) {
+  ensureVillage(s);
+  const sp = SPOTS.find((x) => x.id === id);
+  const v = s.village[id];
+  if (!sp || !v || v.next > Date.now()) return false;
+  const g = sp.gives(v.lv);
+  v.next = Date.now() + spotTime(sp, v.lv);
+  giveCurrency(s, g, emit, { spot: id });
+  if (g.items) emit('toast', { text: `${sp.name} mengirim hadiah! Ambil di papan.`, item: g.items[0] });
+  emit('spot', { id });
+  return true;
+}
+
+export function upgradeSpot(s, id, emit) {
+  ensureVillage(s);
+  const v = s.village[id];
+  if (!v || v.lv >= SPOT_MAX) return false;
+  const cost = upgradeCost(v.lv);
+  if (s.coins < cost) return emit('needCoins', { need: cost - s.coins }), false;
+  s.coins -= cost;
+  v.lv++;
+  emit('spotUp', { id, lv: v.lv });
   return true;
 }
 

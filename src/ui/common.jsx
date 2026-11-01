@@ -229,6 +229,15 @@ export function Icon({ name, size = 22, className = '' }) {
           <path d="M16 2 h8 l-4 6z" fill="#e34f4f" stroke={O} strokeWidth="1.8" strokeLinejoin="round" />
         </svg>
       );
+    case 'map':
+      return (
+        <svg {...p}>
+          <path d="M4 9 l10 -4 l12 4 l10 -4 v26 l-10 4 l-12 -4 l-10 4z" fill="#d6f0c8" stroke={O} strokeWidth="2.4" strokeLinejoin="round" />
+          <path d="M14 5 v26 M26 9 v26" stroke={O} strokeWidth="2" />
+          <path d="M20 26 q-6 -6 -6 -10 a6 6 0 0 1 12 0 q0 4 -6 10z" fill="#e34f4f" stroke={O} strokeWidth="2" />
+          <circle cx="20" cy="16" r="2" fill="#fff" />
+        </svg>
+      );
     case 'sell':
       return <Icon name="coin" size={size} className={className} />;
     default:
