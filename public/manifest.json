@@ -1,6 +1,6 @@
 {
-  "short_name": "ZorroMerge",
-  "name": "Zorro Merger Game - Game for Merge Cats",
+  "short_name": "Zorro Cafe",
+  "name": "Zorro Merge Cats \u2014 Kafe Kucing",
   "icons": [
     {
       "src": "/favicon.png",
@@ -20,8 +20,8 @@
     }
   ],
   "start_url": "/",
-  "background_color": "#3B1E08",
-  "theme_color": "#7C4A26",
+  "background_color": "#3b2a20",
+  "theme_color": "#7a4a2c",
   "display": "standalone",
-  "orientation": "landscape"
+  "orientation": "portrait"
 }

@@ -1,66 +1,49 @@
-// Zorro Merge Cats - Offline PWA Service Worker (Cache-First + Stale-While-Revalidate)
-const CACHE_NAME = 'zorro-merge-cats-v1';
+// Zorro Merge Cats — offline support.
+// Pages: network-first (so new releases show up right away).
+// Static assets: cache-first with background refresh.
+const CACHE = 'zorro-cafe-v2';
 
-const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/photos/zorro_kitten_paws.png',
-  '/cats/zoro_transparent.png',
-  '/cats/thor_transparent.png',
-  '/cats/loki_transparent.png',
-  '/cats/nina_transparent.png'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('[SW] Precache asset fetch warning:', err);
-      });
-    }).then(() => self.skipWaiting())
-  );
-});
+self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  const url = new URL(req.url);
-
-  // Only handle GET requests from the same origin or external fonts/images
   if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
-  // Stale-While-Revalidate strategy for app shell and assets
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put('/index.html', copy));
+          return res;
+        })
+        .catch(() => caches.match('/index.html')),
+    );
+    return;
+  }
+
   event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(req).then((cachedResponse) => {
-        const fetchPromise = fetch(req)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              cache.put(req, networkResponse.clone());
-            }
-            return networkResponse;
+    caches.open(CACHE).then((cache) =>
+      cache.match(req).then((cached) => {
+        const network = fetch(req)
+          .then((res) => {
+            if (res.ok) cache.put(req, res.clone());
+            return res;
           })
-          .catch(() => {
-            // When offline, cachedResponse will be returned
-            return cachedResponse;
-          });
-
-        return cachedResponse || fetchPromise;
-      });
-    })
+          .catch(() => cached);
+        return cached || network;
+      }),
+    ),
   );
 });
