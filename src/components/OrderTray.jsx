@@ -207,23 +207,23 @@ export function OrderTray({
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      margin: '2px 0 6px 0',
+      margin: '0 0 3px 0',
       zIndex: 40,
       pointerEvents: 'auto',
-      gap: '5px'
+      gap: '3px'
     }}>
       {/* 3-Slot Simultaneous Order Preview Bar */}
       {orders.length > 1 && (
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '6px',
-          background: 'rgba(255, 248, 240, 0.94)',
+          gap: '5px',
+          background: 'rgba(255, 248, 240, 0.96)',
           backdropFilter: 'blur(4px)',
-          border: '2px solid #8B5A2B',
-          borderRadius: '16px',
-          padding: '3px 8px',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.12)'
+          border: '1.5px solid #8B5A2B',
+          borderRadius: '14px',
+          padding: '2px 8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           {orders.slice(0, 3).map((ord, idx) => {
             const isSelected = idx === (currentOrderIndex % orders.length);
@@ -331,17 +331,17 @@ export function OrderTray({
       <div style={{
         position: 'relative',
         background: 'linear-gradient(180deg, #FFFDF8 0%, #FAEDD9 100%)',
-        border: '3px solid #7C4A26',
-        borderRadius: '24px',
+        border: '2.5px solid #7C4A26',
+        borderRadius: '20px',
         boxShadow: isReady
-          ? '0 6px 20px rgba(16, 185, 129, 0.45), 0 0 12px rgba(16, 185, 129, 0.25), inset 0 2px 3px rgba(255,255,255,0.9)'
-          : '0 4px 12px rgba(0,0,0,0.18), inset 0 2px 3px rgba(255,255,255,0.9)',
-        padding: '10px 18px',
+          ? '0 4px 16px rgba(16, 185, 129, 0.45), 0 0 10px rgba(16, 185, 129, 0.25), inset 0 2px 3px rgba(255,255,255,0.9)'
+          : '0 3px 10px rgba(0,0,0,0.16), inset 0 2px 3px rgba(255,255,255,0.9)',
+        padding: '5px 14px',
         display: 'flex',
         alignItems: 'center',
-        gap: '14px',
-        minWidth: '420px',
-        maxWidth: '520px',
+        gap: '10px',
+        minWidth: '440px',
+        maxWidth: '560px',
         transition: 'all 0.2s ease'
       }}>
         {/* Cat ears on top of order tray */}
@@ -560,7 +560,7 @@ export function OrderTray({
         </div>
 
         {/* Action Button: SERVE (Ready) or NOT READY (Informative Hint) */}
-        <div>
+        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
           {isReady ? (
             <button
               type="button"
@@ -568,10 +568,10 @@ export function OrderTray({
               className="mockup-action-btn shimmer-badge order-ready-pulse"
               style={{
                 background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
-                border: '2.5px solid #047857',
+                border: '2px solid #047857',
                 borderBottom: '4px solid #064E3B',
                 borderRadius: '16px',
-                padding: '8px 20px',
+                padding: '7px 18px',
                 color: '#FFFFFF',
                 fontSize: '13px',
                 fontWeight: '900',
@@ -588,11 +588,11 @@ export function OrderTray({
                 userSelect: 'none'
               }}
             >
-              <Check size={17} strokeWidth={3} />
+              <Check size={16} strokeWidth={3} />
               <span>KIRIM SELESAI</span>
             </button>
           ) : (
-            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', flexShrink: 0 }}>
               <button
                 type="button"
                 onClick={(e) => {
@@ -613,8 +613,8 @@ export function OrderTray({
                   background: 'linear-gradient(180deg, #FDBA74 0%, #EA580C 100%)',
                   border: '1.5px solid #C2410C',
                   borderBottom: '3px solid #9A3412',
-                  borderRadius: '14px',
-                  padding: '6px 10px',
+                  borderRadius: '13px',
+                  padding: '5px 9px',
                   color: '#FFFFFF',
                   fontSize: '10.5px',
                   fontWeight: '900',
@@ -641,8 +641,8 @@ export function OrderTray({
                   background: 'linear-gradient(180deg, #10B981 0%, #059669 100%)',
                   border: '2px solid #047857',
                   borderBottom: '3.5px solid #064E3B',
-                  borderRadius: '14px',
-                  padding: '6px 12px',
+                  borderRadius: '13px',
+                  padding: '5px 12px',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: '900',

@@ -1280,16 +1280,16 @@ export function MergeBoard({
         className={`merge-grid-board ${isShaking ? 'board-screen-shake' : ''}`}
         style={{
           width: '940px',
-          height: '295px',
+          height: '278px',
           background: 'linear-gradient(180deg, #FCF2E3 0%, #F5E5D0 100%)',
           border: '3.5px solid #8B5A2B',
           borderRadius: '20px',
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.28), inset 0 2px 4px rgba(255, 255, 255, 0.8)',
-          padding: '8px',
+          padding: '7px',
           display: 'grid',
           gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
           gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`,
-          gap: '5px',
+          gap: '4px',
           position: 'relative',
           touchAction: 'none'
         }}
@@ -1553,11 +1553,12 @@ export function MergeBoard({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '8px',
-        marginTop: '8px',
+        flexWrap: 'nowrap',
+        gap: '6px',
+        marginTop: '5px',
         padding: '0 4px',
-        paddingBottom: '28px'
+        paddingBottom: '2px',
+        overflowX: 'auto'
       }}>
         {selectedIndex !== null && board[selectedIndex] ? (
           /* Item Selected Action Bar: Sell, Use, or Cancel */

@@ -1157,7 +1157,7 @@ export default function App() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'flex-start',
-              padding: '2px 0 54px 0',
+              padding: '2px 0 6px 0',
               gap: '4px',
               overflowY: 'auto',
               overflowX: 'hidden'
