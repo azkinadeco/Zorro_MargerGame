@@ -10,7 +10,9 @@ Nina mewarisi kafe tua milik Neneknya, dan bersama Zorro si kucing tuxedo, kalia
 3. **Sajikan pesanan** pelanggan kucing di bagian atas untuk mendapat koin dan XP.
 4. **Renovasi kafe** dengan koin: 6 ruangan, masing-masing 7 tugas renovasi. Ruangan yang selesai membuka cerita, hadiah permata, dan kucing penghuni baru.
 
-Fitur lain: kotak misteri & sarang laba-laba di papan, gelembung bonus, gudang, tombol hadiah, naik level dengan generator baru,
+5. **Teman Kucing**: beri Zorro, Loki, dan Thor camilan favorit mereka. Setiap hati baru memberi permata dan membuka foto asli mereka di **Album Foto**.
+
+Fitur lain: pelanggan VIP berbatas waktu (koin ganda + permata), ganti pesanan dengan 1 permata, petunjuk merge otomatis saat diam, kotak misteri & sarang laba-laba di papan, gelembung bonus, gudang, tombol hadiah, naik level dengan generator baru,
 misi harian, hadiah login 7 hari, buku resep (koleksi item), toko, energi yang terisi sendiri, musik & efek suara (Web Audio), tutorial interaktif, dan simpan otomatis di perangkat.
 
 ## Struktur kode

@@ -2,7 +2,8 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { COLS, ROWS } from '../game/config';
 import { item, nextId } from '../game/items';
 import { useGameCtx } from '../game/useGame';
-import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge } from '../game/engine';
+import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, swapOrder, SWAP_COST } from '../game/engine';
+import { fmtTime } from './common';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
 import { CatArt } from '../art/CatArt';
 import { CUSTOMERS } from '../game/config';
@@ -18,7 +19,8 @@ export function markAllSeen(board) {
 }
 
 // ------------------------------------------------------------------ orders
-function OrderCard({ order, board, onServe, highlight }) {
+function OrderCard({ order, board, onServe, onSwap, canSwap, highlight, now }) {
+  const [confirm, setConfirm] = useState(false);
   const cat = CUSTOMERS.find((c) => c.id === order.cat);
   const ready = useMemo(() => !!findOrderItems(board, order), [board, order]);
   // per-item availability (respecting duplicates)
@@ -36,11 +38,33 @@ function OrderCard({ order, board, onServe, highlight }) {
     });
   }, [board, order]);
   return (
-    <div className={`order ${ready ? 'ready' : ''}`} data-order={order.uid}>
+    <div className={`order ${ready ? 'ready' : ''} ${order.vip ? 'vip' : ''}`} data-order={order.uid}>
+      {order.vip && (
+        <div className="vip-crown">
+          <Icon name="crown" size={22} />
+        </div>
+      )}
+      {canSwap && !ready && (
+        <button type="button" className="order-x" aria-label="Ganti pesanan" onClick={() => (sfx('tap'), setConfirm(true))}>
+          <Icon name="swap" size={14} />
+        </button>
+      )}
+      {confirm && (
+        <div className="order-confirm">
+          <span>Ganti pesanan?</span>
+          <Btn small color="purple" onClick={() => (setConfirm(false), onSwap(order.uid))}>
+            <Icon name="gem" size={14} />
+            {SWAP_COST}
+          </Btn>
+          <button type="button" className="order-confirm-no" onClick={() => setConfirm(false)}>
+            Batal
+          </button>
+        </div>
+      )}
       <div className="order-cat">
         <CatArt id={order.cat} mood={ready ? 'happy' : 'wait'} />
       </div>
-      <div className="order-name">{cat?.name}</div>
+      <div className="order-name">{order.vip ? <span className="vip-time">VIP · {fmtTime(Math.max(0, order.vip - now))}</span> : cat?.name}</div>
       <div className={`order-items n${order.items.length}`}>
         {order.items.map((id, i) => (
           <div key={i} className={`order-item ${have[i] ? 'have' : ''}`} title={item(id).name}>
@@ -63,24 +87,47 @@ function OrderCard({ order, board, onServe, highlight }) {
             <Icon name="xp" size={15} />
             {order.xp}
           </span>
+          {order.gems ? (
+            <span>
+              <Icon name="gem" size={15} />
+              {order.gems}
+            </span>
+          ) : null}
         </div>
       )}
     </div>
   );
 }
 
-function OrdersBar({ board, orders, onServe }) {
+function OrdersBar({ board, orders, onServe, onSwap, canSwap }) {
+  const hasVip = orders.some((o) => o.vip);
+  const now = useNow(hasVip ? 1000 : 60000);
   return (
     <div className={`orders n${orders.length}`}>
       {orders.map((o, i) => (
-        <OrderCard key={o.uid} order={o} board={board} onServe={onServe} highlight={i === 0} />
+        <OrderCard key={o.uid} order={o} board={board} onServe={onServe} onSwap={onSwap} canSwap={canSwap} highlight={i === 0} now={now} />
       ))}
     </div>
   );
 }
 
 // -------------------------------------------------------------------- cell
-const ItemView = memo(function ItemView({ cell, index, cellSize, selected, hidden, match, wanted, now }) {
+function findPair(board) {
+  const firstFree = {};
+  for (let i = 0; i < board.length; i++) {
+    const c = board[i];
+    if (!c || c.st || c.bubble || !nextId(c.id)) continue;
+    if (firstFree[c.id] !== undefined) return [firstFree[c.id], i];
+    firstFree[c.id] = i;
+  }
+  for (let i = 0; i < board.length; i++) {
+    const c = board[i];
+    if (c?.st === 'web' && firstFree[c.id] !== undefined && nextId(c.id)) return [firstFree[c.id], i];
+  }
+  return null;
+}
+
+const ItemView = memo(function ItemView({ cell, index, cellSize, selected, hidden, match, wanted, now, hinted }) {
   const it = item(cell.id);
   const [anim] = useState(() => {
     if (seen.has(cell.uid) && !pendingFrom.has(cell.uid)) return null;
@@ -95,7 +142,7 @@ const ItemView = memo(function ItemView({ cell, index, cellSize, selected, hidde
     if (cell.merged || cell.pop) return { cls: 'pop-in' };
     return null;
   });
-  const cls = ['item', `k-${it.kind}`, anim?.cls, selected && 'sel', hidden && 'ghosted', match && 'match', cell.st === 'web' && 'webbed', cell.bubble && 'bubbled'].filter(Boolean).join(' ');
+  const cls = ['item', `k-${it.kind}`, anim?.cls, selected && 'sel', hidden && 'ghosted', match && 'match', hinted && 'hint', cell.st === 'web' && 'webbed', cell.bubble && 'bubbled'].filter(Boolean).join(' ');
   const bubbleLeft = cell.bubble ? Math.max(0, cell.bubble - now) : 0;
   return (
     <div className={cls} style={anim?.style}>
@@ -134,6 +181,18 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
   const dragRef = useRef(null);
   const [drag, setDrag] = useState(null);
   const now = useNow(500);
+  const lastTouch = useRef(Date.now());
+  const [hint, setHint] = useState(null);
+
+  // After a few idle seconds, wiggle two items that can be merged
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (dragRef.current || Date.now() - lastTouch.current < 8000) return;
+      setHint((h) => h || findPair(gameRef.current.board));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [gameRef]);
+  const hintOk = hint && state.board[hint[0]] && state.board[hint[1]] && state.board[hint[0]].id === state.board[hint[1]].id && !state.board[hint[0]].st;
   const hasBubble = state.board.some((c) => c?.bubble);
 
   const wanted = useMemo(() => {
@@ -180,6 +239,8 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
   };
 
   const onDown = (e) => {
+    lastTouch.current = Date.now();
+    if (hint) setHint(null);
     if (e.button !== undefined && e.button !== 0) return;
     const i = cellAt(e.clientX, e.clientY);
     if (i < 0) return;
@@ -275,6 +336,7 @@ function Board({ state, act, gameRef, selected, setSelected, cellSize, tut }) {
                   match={!!dragId && cell.id === dragId && drag.from !== i && !cell.bubble && !!nextId(cell.id)}
                   wanted={!isGen && wanted.has(cell.id)}
                   now={hasBubble ? now : 0}
+                  hinted={!!hintOk && !drag && (hint[0] === i || hint[1] === i)}
                 />
               ))}
           </div>
@@ -420,7 +482,7 @@ export function BoardScreen({ onNav, tutStep }) {
 
   return (
     <div className="screen board-screen">
-      <OrdersBar board={state.board} orders={state.orders} onServe={onServe} />
+      <OrdersBar board={state.board} orders={state.orders} onServe={onServe} onSwap={(uid) => act(swapOrder, uid)} canSwap={state.tut >= 99} />
       <div className="board-wrap" ref={wrapRef}>
         <div className="board-frame">
           <Board state={state} act={act} gameRef={gameRef} selected={selected} setSelected={setSelected} cellSize={cellSize} tut={tut} />

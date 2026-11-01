@@ -342,7 +342,7 @@ img {
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   gap: 6px;
-  padding: 26px 8px 8px;
+  padding: 30px 8px 8px;
   background: repeating-linear-gradient(90deg, #f7d9c4 0 18px, #f3ccb3 18px 36px);
   border-bottom: 6px solid var(--wood);
   box-shadow: inset 0 -10px 0 #e2b07a, 0 3px 6px rgba(0, 0, 0, 0.15);
@@ -2115,4 +2115,287 @@ h4 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ======================================================== v2.1 additions */
+.btn-pink {
+  --c: var(--pink);
+  --cd: var(--pink-d);
+}
+.bar-pink .bar-fill {
+  background: linear-gradient(#ffc2d4, var(--pink));
+}
+
+/* idle merge hint */
+.item.hint .item-art {
+  animation: hint-wiggle 1.2s ease-in-out infinite;
+}
+.item.hint {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 10px 3px rgba(242, 126, 160, 0.6);
+}
+@keyframes hint-wiggle {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  70% {
+    transform: rotate(-9deg) scale(1.08);
+  }
+  80% {
+    transform: rotate(9deg) scale(1.08);
+  }
+  90% {
+    transform: rotate(-4deg) scale(1.04);
+  }
+}
+
+/* VIP & swap */
+.order.vip {
+  border-color: #c9932a;
+  background: linear-gradient(#fff6d6, #fffaf2 60%);
+  box-shadow: 0 3px 0 #c9932a, 0 0 14px rgba(255, 210, 63, 0.6);
+}
+.order.vip .order-cat {
+  border-color: #c9932a;
+  background: #ffe9a6;
+}
+.vip-crown {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%) rotate(-8deg);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.25));
+}
+.vip-time {
+  color: #b07a12;
+  font-weight: 700;
+}
+.order-x {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #ead6bd;
+  background: #fff;
+  opacity: 0.8;
+}
+.order-confirm {
+  position: absolute;
+  inset: -2px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 14px;
+  background: rgba(255, 250, 242, 0.97);
+  font: 700 12px var(--font-head);
+  text-align: center;
+  animation: fade 0.15s;
+}
+.order-confirm-no {
+  border: none;
+  background: none;
+  font: 700 12px var(--font-head);
+  color: var(--ink-soft);
+  text-decoration: underline;
+}
+
+/* pets */
+.hearts {
+  display: inline-flex;
+  gap: 1px;
+}
+.pet-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.pet-card.locked {
+  opacity: 0.65;
+}
+.pet-card.locked .pet-img img {
+  filter: brightness(0) opacity(0.35);
+}
+.pet-img {
+  width: 72px;
+  height: 72px;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 70%, #fde2e8, #f7d0da);
+  border: 2.5px solid var(--ink);
+  overflow: hidden;
+}
+.pet-img img {
+  max-width: 108%;
+  max-height: 100%;
+}
+.pet-bounce img {
+  animation: pet 0.6s ease-out;
+}
+.pet-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pet-info b {
+  font: 700 17px var(--font-head);
+}
+.pet-bar .bar {
+  height: 10px;
+}
+.pet-bio {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  line-height: 1.2;
+}
+.pet-want {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 74px;
+  flex: none;
+}
+.pet-want small {
+  font: 700 11px var(--font-head);
+  color: var(--ink-soft);
+}
+.pet-want-art {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  padding: 2px;
+  border-radius: 12px;
+  background: #f6ead9;
+}
+.pet-want-art.have {
+  background: #d6f0c8;
+}
+.pet-want-name {
+  text-align: center;
+  line-height: 1.1;
+}
+.pet-want .btn {
+  width: 100%;
+  min-height: 30px;
+}
+
+/* album */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 10px;
+  padding: 4px;
+}
+.polaroid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 3px 8px rgba(60, 30, 10, 0.25);
+  transform: rotate(var(--tilt, 0deg));
+  font-family: var(--font-head);
+}
+.polaroid-img {
+  aspect-ratio: 1;
+  background: #eee center / cover;
+  border-radius: 2px;
+}
+.polaroid small {
+  font: 600 11px/1.2 var(--font-head);
+  text-align: center;
+  color: var(--ink);
+}
+.polaroid.locked .polaroid-img {
+  filter: blur(9px) grayscale(1) brightness(0.8);
+}
+.polaroid-lock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.photo-view {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(30, 15, 5, 0.75);
+  animation: fade 0.2s;
+}
+.polaroid.big {
+  width: min(86vw, 400px);
+  transform: rotate(-2deg);
+  animation: modal-in 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.polaroid.big img,
+.polaroid.reveal img {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: cover;
+  border-radius: 2px;
+}
+.polaroid.big small {
+  font-size: 15px;
+  padding: 4px;
+}
+
+/* heart reward */
+.rays.pink {
+  background: repeating-conic-gradient(rgba(255, 170, 200, 0.35) 0 10deg, transparent 10deg 20deg);
+}
+.heart-cat {
+  position: relative;
+  height: 130px;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.4));
+  animation: pop-in 0.6s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+.heart-reward h2 {
+  font-size: 28px;
+}
+.heart-reward .hearts {
+  position: relative;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3));
+}
+.polaroid.reveal {
+  position: relative;
+  width: 62%;
+  transform: rotate(3deg);
+  animation: photo-drop 0.8s 0.3s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.polaroid.reveal img {
+  max-height: 34vh;
+}
+@keyframes photo-drop {
+  from {
+    transform: translateY(-60px) rotate(-20deg) scale(0.6);
+    opacity: 0;
+  }
+}
+.side-btns .round-btn .ico[viewBox] {
+  overflow: visible;
 }

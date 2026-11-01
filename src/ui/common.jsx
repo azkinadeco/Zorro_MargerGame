@@ -147,6 +147,51 @@ export function Icon({ name, size = 22, className = '' }) {
           <circle cx="20" cy="26" r="3" fill={O} />
         </svg>
       );
+    case 'cat':
+      return (
+        <svg {...p}>
+          <path d="M8 18 L7 5 L16 12 h8 L33 5 L32 18 q4 6 1 12 q-4 7 -13 7 q-9 0 -13 -7 q-3 -6 1 -12z" fill="#2f2a2b" stroke={O} strokeWidth="2.4" strokeLinejoin="round" />
+          <path d="M13 24 q7 -6 14 0 q3 6 -1 10 q-6 3 -12 0 q-4 -4 -1 -10z" fill="#fffaf2" />
+          <circle cx="14.5" cy="20" r="2.2" fill="#9ccc65" />
+          <circle cx="25.5" cy="20" r="2.2" fill="#9ccc65" />
+          <path d="M18.5 26 h3 l-1.5 1.6z" fill="#f27e8e" />
+          <path d="M9 9 l3 3 M31 9 l-3 3" stroke="#f6b3bf" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case 'heart':
+      return (
+        <svg {...p}>
+          <path d="M20 35 q-16 -10 -16 -21 q0 -8 8 -8 q5 0 8 5 q3 -5 8 -5 q8 0 8 8 q0 11 -16 21z" fill="#f27ea0" stroke={O} strokeWidth="2.5" strokeLinejoin="round" />
+          <path d="M10 12 q2 -3 5 -2" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+        </svg>
+      );
+    case 'heartEmpty':
+      return (
+        <svg {...p}>
+          <path d="M20 35 q-16 -10 -16 -21 q0 -8 8 -8 q5 0 8 5 q3 -5 8 -5 q8 0 8 8 q0 11 -16 21z" fill="#ead6bd" stroke={O} strokeWidth="2.5" strokeLinejoin="round" opacity="0.7" />
+        </svg>
+      );
+    case 'photo':
+      return (
+        <svg {...p}>
+          <rect x="5" y="9" width="30" height="24" rx="3" fill="#fffaf2" stroke={O} strokeWidth="2.5" />
+          <path d="M8 29 l8 -9 l6 6 l4 -4 l7 7" fill="#9fd77a" stroke={O} strokeWidth="2" strokeLinejoin="round" />
+          <circle cx="27" cy="16" r="3" fill="#ffd23f" stroke={O} strokeWidth="1.8" />
+        </svg>
+      );
+    case 'crown':
+      return (
+        <svg {...p}>
+          <path d="M5 30 l2 -18 l8 8 l5 -12 l5 12 l8 -8 l2 18z" fill="#ffd23f" stroke={O} strokeWidth="2.5" strokeLinejoin="round" />
+          <circle cx="20" cy="24" r="2.5" fill="#e34f4f" />
+        </svg>
+      );
+    case 'swap':
+      return (
+        <svg {...p}>
+          <path d="M8 15 h20 l-5 -5 M32 25 h-20 l5 5" fill="none" stroke={O} strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
     case 'sell':
       return <Icon name="coin" size={size} className={className} />;
     default:

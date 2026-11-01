@@ -46,23 +46,10 @@ export const CHAINS = {
       { name: 'Kue Mahkota Kucing', desc: 'Mahakarya pastry kafe!' },
     ],
   },
-  tea: {
-    name: 'Teh',
-    color: '#5f9a4a',
-    unlock: 5,
-    items: [
-      { name: 'Daun Teh', desc: 'Pucuk teh hijau segar.' },
-      { name: 'Teh Hangat', desc: 'Secangkir teh yang menenangkan.' },
-      { name: 'Teh Susu', desc: 'Teh dengan susu yang creamy.' },
-      { name: 'Boba', desc: 'Teh susu dengan mutiara kenyal.' },
-      { name: 'Matcha Latte', desc: 'Hijau, lembut, dan wangi.' },
-      { name: 'Set Teh Sore', desc: 'Teko antik dan cangkir cantik.' },
-    ],
-  },
   treat: {
     name: 'Camilan Kucing',
     color: '#4f8fc0',
-    unlock: 7,
+    unlock: 4,
     items: [
       { name: 'Ikan Teri', desc: 'Kecil tapi bikin kucing semangat.' },
       { name: 'Ikan Segar', desc: 'Baru dari pasar pagi ini.' },
@@ -70,6 +57,19 @@ export const CHAINS = {
       { name: 'Sushi Ikan', desc: 'Sushi khusus lidah kucing.' },
       { name: 'Onigiri Kucing', desc: 'Nasi kepal bertelinga kucing.' },
       { name: 'Bento Kucing', desc: 'Kotak bekal paling mewah.' },
+    ],
+  },
+  tea: {
+    name: 'Teh',
+    color: '#5f9a4a',
+    unlock: 6,
+    items: [
+      { name: 'Daun Teh', desc: 'Pucuk teh hijau segar.' },
+      { name: 'Teh Hangat', desc: 'Secangkir teh yang menenangkan.' },
+      { name: 'Teh Susu', desc: 'Teh dengan susu yang creamy.' },
+      { name: 'Boba', desc: 'Teh susu dengan mutiara kenyal.' },
+      { name: 'Matcha Latte', desc: 'Hijau, lembut, dan wangi.' },
+      { name: 'Set Teh Sore', desc: 'Teko antik dan cangkir cantik.' },
     ],
   },
 };
@@ -115,8 +115,8 @@ export const GENERATORS = {
   coffee: { name: 'Mesin Kopi', chain: 'coffee' },
   bread: { name: 'Oven', chain: 'bread' },
   cake: { name: 'Etalase Kue', chain: 'cake' },
-  tea: { name: 'Teko Antik', chain: 'tea' },
   treat: { name: 'Keranjang Ikan', chain: 'treat' },
+  tea: { name: 'Teko Antik', chain: 'tea' },
 };
 export const GEN_MAX = 3;
 

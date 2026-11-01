@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { newGame, tick } from './engine';
+import { newGame, tick, ensureGenerators, ensurePets } from './engine';
 import { dayKey } from './quests';
 import { ENERGY_MAX, ENERGY_REGEN_MS } from './config';
 
@@ -29,6 +29,8 @@ export function loadGame() {
     for (const k of Object.keys(fresh)) if (s[k] === undefined) s[k] = fresh[k];
     s.settings = { ...fresh.settings, ...s.settings };
     s.shop = { ...fresh.shop, ...s.shop };
+    ensureGenerators(s);
+    ensurePets(s);
     return s;
   } catch {
     return null;

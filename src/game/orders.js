@@ -4,10 +4,11 @@ import { CUSTOMERS } from './config';
 export function unlockedChains(level) {
   return Object.entries(CHAINS)
     .filter(([, c]) => c.unlock <= level)
+    .sort((a, b) => a[1].unlock - b[1].unlock)
     .map(([k]) => k);
 }
 
-function maxTierFor(level, chain) {
+export function maxTierFor(level, chain) {
   const c = CHAINS[chain];
   const sinceUnlock = level - c.unlock;
   return Math.min(c.items.length, 2 + Math.floor(sinceUnlock / 1.6));

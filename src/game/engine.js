@@ -2,9 +2,10 @@
 // Game engine: pure-ish state transitions. Every action receives a mutable
 // draft (already cloned) plus an `emit(type, data)` callback for UI effects.
 // ============================================================================
-import { COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, STORAGE_MAX, BUBBLE_MS, BUBBLE_CHANCE, FREE_GIFT_MS, xpForLevel, levelRewards, orderSlots } from './config';
+import { VIP_MS, COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, STORAGE_MAX, BUBBLE_MS, BUBBLE_CHANCE, FREE_GIFT_MS, xpForLevel, levelRewards, orderSlots } from './config';
 import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
-import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains } from './orders';
+import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
+import { PETS, heartsFor, MAX_HEARTS } from './pets';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
 
@@ -96,10 +97,12 @@ export function newGame() {
     tut: 0,
     seen: {},
     pendingLevel: [],
+    pets: {},
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
   refreshDay(s);
+  ensurePets(s);
   return s;
 }
 
@@ -128,6 +131,13 @@ export function fillOrders(s, rng = Math.random) {
       s.scripted++;
     } else {
       o = makeOrder(s.level, s.orderSeq++, rng, s.orders.map((x) => x.cat));
+      // Occasional VIP guest: limited time, double coins, bonus gems
+      if (s.level >= 4 && !s.orders.some((x) => x.vip) && rng() < 0.12) {
+        o.vip = Date.now() + VIP_MS;
+        o.coins *= 2;
+        o.xp = Math.round(o.xp * 1.5);
+        o.gems = 2 + Math.floor(s.level / 4);
+      }
     }
     s.orders.push(o);
   }
@@ -189,6 +199,13 @@ export function tick(s, now, emit) {
       emit('bubbleExpire', { idx: i });
     }
   });
+  // VIP guests leave when their patience runs out
+  const before = s.orders.length;
+  s.orders = s.orders.filter((o) => !o.vip || o.vip > now);
+  if (s.orders.length < before) {
+    emit('toast', { text: 'Tamu VIP sudah pergi… lain kali lebih cepat, ya!' });
+    fillOrders(s);
+  }
   refreshDay(s);
 }
 
@@ -468,11 +485,97 @@ export function serve(s, orderUid, emit) {
   s.orders.splice(oi, 1);
   s.stats.served++;
   questProgress(s, 'serve');
-  giveCurrency(s, { coins: o.coins, xp: o.xp }, emit, { order: o.uid });
+  giveCurrency(s, { coins: o.coins, xp: o.xp, gems: o.gems || 0 }, emit, { order: o.uid });
   if (o.bonus) s.gifts.push(o.bonus);
   fillOrders(s);
   if (s.tut === 3) s.tut = 4;
   return true;
+}
+
+export const SWAP_COST = 1;
+
+export function swapOrder(s, orderUid, emit) {
+  const oi = s.orders.findIndex((o) => o.uid === orderUid);
+  if (oi < 0 || s.tut < 99) return false;
+  if (s.gems < SWAP_COST) return emit('needGems'), false;
+  s.gems -= SWAP_COST;
+  const old = s.orders[oi];
+  const o = makeOrder(s.level, s.orderSeq++, Math.random, s.orders.map((x) => x.cat).concat(old.cat));
+  s.orders[oi] = o;
+  emit('swapOrder', { uid: o.uid });
+  return true;
+}
+
+// ---------------------------------------------------------------------------
+// Resident cats (affection)
+// ---------------------------------------------------------------------------
+export function petWant(s, cat, rng = Math.random) {
+  const p = PETS[cat];
+  const unlocked = unlockedChains(s.level);
+  const likes = p.likes.filter((c) => unlocked.includes(c));
+  const pool = likes.length ? likes : unlocked;
+  const chain = pool[Math.floor(rng() * pool.length)];
+  const hearts = heartsFor(s.pets[cat]?.pts || 0);
+  const maxT = maxTierFor(s.level, chain);
+  const t = Math.max(2, Math.min(maxT, 2 + Math.floor(hearts / 1.5)));
+  return `${chain}_${t}`;
+}
+
+export function ensurePets(s) {
+  s.pets ||= {};
+  for (const cat of s.residents) {
+    if (!PETS[cat]) continue;
+    s.pets[cat] ||= { pts: 0, want: null };
+    if (!s.pets[cat].want) s.pets[cat].want = petWant(s, cat);
+  }
+}
+
+// Board cell index (or storage slot) holding the wanted item
+export function findPetItem(s, cat) {
+  const want = s.pets[cat]?.want;
+  if (!want) return null;
+  const bi = s.board.findIndex((c) => c && !c.st && !c.bubble && c.id === want);
+  if (bi >= 0) return { board: bi };
+  const si = s.storage.indexOf(want);
+  if (si >= 0) return { storage: si };
+  return null;
+}
+
+export function feedPet(s, cat, emit) {
+  ensurePets(s);
+  const pet = s.pets[cat];
+  if (!pet) return false;
+  const where = findPetItem(s, cat);
+  if (!where) return false;
+  const it = item(pet.want);
+  if (where.board !== undefined) s.board[where.board] = null;
+  else s.storage.splice(where.storage, 1);
+  const before = heartsFor(pet.pts);
+  pet.pts += it.value * 2 + 2;
+  const after = heartsFor(pet.pts);
+  giveCurrency(s, { energy: 2 + it.tier, coins: it.value * 2 }, emit);
+  emit('feed', { cat, id: pet.want });
+  for (let h = before + 1; h <= after; h++) {
+    const gems = 3 * h;
+    s.gems += gems;
+    emit('petHeart', { cat, hearts: h, gems, photo: PETS[cat].photos[h] || null });
+  }
+  pet.want = petWant(s, cat);
+  return true;
+}
+
+export function petMaxed(s, cat) {
+  return heartsFor(s.pets?.[cat]?.pts || 0) >= MAX_HEARTS;
+}
+
+// Old saves or reordered unlocks: every unlocked chain must own a generator
+export function ensureGenerators(s) {
+  const owned = new Set();
+  const note = (id) => id?.startsWith('gen') && owned.add(id.split('_')[0].slice(3));
+  s.board.forEach((c) => c && note(c.id));
+  s.storage.forEach(note);
+  s.gifts.forEach(note);
+  for (const ch of unlockedChains(s.level)) if (!owned.has(ch)) s.gifts.push(`gen${ch}_1`);
 }
 
 // ---------------------------------------------------------------------------
@@ -502,6 +605,7 @@ export function doTask(s, ai, taskId, emit) {
     const rew = a.reward;
     s.gems += rew.gems;
     if (rew.cat && !s.residents.includes(rew.cat)) s.residents.push(rew.cat);
+    ensurePets(s);
     if (ai === s.areaIdx && ai < AREAS.length - 1) s.areaIdx = ai + 1;
     emit('areaComplete', { area: a, reward: rew });
   }

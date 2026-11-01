@@ -11,6 +11,7 @@ export const STORAGE_MAX = 12;
 export const BUBBLE_MS = 60 * 1000;
 export const BUBBLE_CHANCE = 0.07;
 
+export const VIP_MS = 15 * 60 * 1000;
 export const FREE_GIFT_MS = 4 * 60 * 60 * 1000;
 
 // XP needed to go from level L to L+1

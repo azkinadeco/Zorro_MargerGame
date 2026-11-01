@@ -2,12 +2,13 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AREAS, RESIDENTS, taskXp } from '../game/areas';
 import { useGameCtx, bus } from '../game/useGame';
 import { canClaimDaily } from '../game/engine';
+import { anyPetReady } from './Pets';
 import { Icon, Btn, Bar } from './common';
 import { sfx } from '../game/audio';
 
 const IMG_RATIO = 1376 / 768;
 
-function RoomView({ area, done, complete, justDone, onTask, tutTask, residents }) {
+function RoomView({ area, done, complete, justDone, onTask, tutTask, residents, onPet }) {
   const scrollRef = useRef(null);
   const [h, setH] = useState(400);
   const w = Math.round(h * IMG_RATIO);
@@ -89,6 +90,7 @@ function RoomView({ area, done, complete, justDone, onTask, tutTask, residents }
                   el.classList.remove('pet');
                   void el.offsetWidth;
                   el.classList.add('pet');
+                  setTimeout(() => onPet?.(), 650);
                 }}
                 aria-label={r.name}
               >
@@ -177,7 +179,7 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         </button>
       </div>
 
-      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} />
+      <RoomView area={area} done={done} complete={complete} justDone={justDone} onTask={(t) => onTask(ai, t)} tutTask={tutTask} residents={state.residents} onPet={() => onNav('pets')} />
 
       {complete && <div className="area-done">✨ Ruangan selesai direnovasi! ✨</div>}
 
@@ -189,6 +191,10 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         <button type="button" className="round-btn" onClick={() => onNav('codex')} aria-label="Koleksi resep">
           <Icon name="book" size={30} />
           {codexReady && <i className="badge dot">!</i>}
+        </button>
+        <button type="button" className="round-btn" onClick={() => onNav('pets')} aria-label="Teman kucing">
+          <Icon name="cat" size={32} />
+          {anyPetReady(state) && <i className="badge dot">!</i>}
         </button>
         <button type="button" className="round-btn" onClick={() => onNav('tasks')} aria-label="Daftar renovasi">
           <Icon name="star" size={30} />

@@ -9,9 +9,10 @@ import { BoardScreen, markAllSeen } from './ui/BoardScreen';
 import { CafeScreen, TaskSheet } from './ui/CafeScreen';
 import { StorageModal, QuestsModal, DailyModal, CodexModal, ShopModal, EnergyModal, LevelUpModal, LevelInfoModal, TasksModal, SettingsModal } from './ui/Modals';
 import { Dialogue, Tutorial, FX } from './ui/Overlays';
+import { PetsModal, AlbumModal, HeartReward } from './ui/Pets';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album'];
 
 function Title({ onStart, returning }) {
   return (
@@ -36,6 +37,7 @@ function Game({ onReset }) {
   const [modal, setModal] = useState(null);
   const [taskSheet, setTaskSheet] = useState(null);
   const [dialogues, setDialogues] = useState([]);
+  const [hearts, setHearts] = useState([]);
   const [viewArea, setViewArea] = useState(state.areaIdx);
   const dailyShown = useRef(false);
   const returning = useRef(hasSave() && state.tut > 0);
@@ -93,6 +95,18 @@ function Game({ onReset }) {
             vibrate(vibe, 30);
             setTimeout(() => say([d.task.line]), 900);
             break;
+          case 'feed':
+            sfx('pop');
+            break;
+          case 'petHeart':
+            setTimeout(() => {
+              sfx('levelUp');
+              setHearts((q) => [...q, d]);
+            }, 500);
+            break;
+          case 'swapOrder':
+            sfx('whoosh');
+            break;
           case 'areaComplete':
             setTimeout(() => {
               say(d.area.outro, () => {
@@ -140,6 +154,19 @@ function Game({ onReset }) {
     }, 1200);
     return () => clearTimeout(id);
   }, [screen, state.tut, state.seen.hint_web, state.board, state.pendingLevel.length, dialogues.length, act, say]);
+
+  // introduce the resident-cat feature once the player is settled in
+  useEffect(() => {
+    if (screen !== 'cafe' || state.tut < 99 || state.seen.hint_pets || dialogues.length || modal || state.stats.served < 6) return;
+    const id = setTimeout(() => {
+      act((s) => void (s.seen.hint_pets = 1));
+      say([
+        ['zorro', 'Meooong… (Perutku keroncongan.)'],
+        ['nina', 'Zorro lapar! Ketuk tombol kucing di kiri untuk memberinya camilan favorit. Makin sayang, makin banyak foto kenangan yang terbuka.'],
+      ]);
+    }, 900);
+    return () => clearTimeout(id);
+  }, [screen, state.tut, state.seen.hint_pets, state.stats.served, dialogues.length, modal, act, say]);
 
   // tutorial completion story beat
   useEffect(() => {
@@ -236,6 +263,8 @@ function Game({ onReset }) {
           {modal === 'shop' && <ShopModal onClose={() => setModal(null)} />}
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
+          {modal === 'pets' && <PetsModal onClose={() => setModal(null)} onAlbum={() => setModal('album')} />}
+          {modal === 'album' && <AlbumModal onClose={() => setModal('pets')} />}
           {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} onReset={onReset} />}
           {modal === 'tasks' && (
             <TasksModal
@@ -260,6 +289,7 @@ function Game({ onReset }) {
           )}
 
           {screen !== 'title' && !curDialogue && <LevelUpModal />}
+          {hearts[0] && !curDialogue && <HeartReward r={hearts[0]} onDone={() => (sfx('tap'), setHearts((q) => q.slice(1)))} />}
           {curDialogue && (
             <Dialogue
               key={dialogues.length + curDialogue.lines[0][1]}
