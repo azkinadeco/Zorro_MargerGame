@@ -89,3 +89,17 @@ export function achState(s, a) {
 export function achClaimable(s) {
   return ACHIEVEMENTS.filter((a) => achState(s, a).ready).length;
 }
+
+// --------------------------------------------------------------- lucky wheel
+export const WHEEL = [
+  { r: { energy: 15 }, w: 18, color: '#fff3c4' },
+  { r: { coins: 30 }, w: 18, color: '#ffe1cc' },
+  { r: { gems: 2 }, w: 12, color: '#efe4ff' },
+  { r: { energy: 35 }, w: 12, color: '#e3f6d8' },
+  { r: { coins: 80 }, w: 10, color: '#ffd9e4' },
+  { r: { item: 'chest_1' }, w: 12, color: '#dff1fb' },
+  { r: { item: 'scissors_1' }, w: 10, color: '#fff3c4' },
+  { r: { gems: 10 }, w: 4, color: '#ffe1cc', jackpot: true },
+];
+export const WHEEL_EXTRA_COST = 5;
+export const WHEEL_EXTRA_MAX = 5;

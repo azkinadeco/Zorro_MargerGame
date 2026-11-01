@@ -6,7 +6,7 @@ import { VIP_MS, COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, 
 import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
 import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
-import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState } from './meta';
+import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState, WHEEL, WHEEL_EXTRA_COST, WHEEL_EXTRA_MAX } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
 
@@ -734,6 +734,41 @@ export function claimAch(s, id, emit) {
   s.ach ||= {};
   s.ach[id] = st.tier + 1;
   giveCurrency(s, { gems: ACH_GEMS[st.tier] }, emit);
+  return true;
+}
+
+export function wheelState(s) {
+  const today = dayKey();
+  const w = s.wheel && s.wheel.day === today ? s.wheel : { day: today, free: true, extra: 0, pending: s.wheel?.pending ?? null };
+  return w;
+}
+
+export function spinWheel(s, emit) {
+  const w = wheelState(s);
+  if (w.pending !== null && w.pending !== undefined) return w.pending;
+  if (!w.free) {
+    if (w.extra >= WHEEL_EXTRA_MAX) return null;
+    if (s.gems < WHEEL_EXTRA_COST) return emit('needGems'), null;
+    s.gems -= WHEEL_EXTRA_COST;
+    w.extra++;
+  }
+  w.free = false;
+  const total = WHEEL.reduce((n, x) => n + x.w, 0);
+  let r = Math.random() * total;
+  let idx = 0;
+  while (r >= WHEEL[idx].w) r -= WHEEL[idx++].w;
+  w.pending = idx;
+  s.wheel = w;
+  return idx;
+}
+
+export function claimWheel(s, emit) {
+  const w = s.wheel;
+  if (!w || w.pending === null || w.pending === undefined) return false;
+  const slice = WHEEL[w.pending];
+  w.pending = null;
+  giveCurrency(s, slice.r, emit);
+  if (slice.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: slice.r.item });
   return true;
 }
 

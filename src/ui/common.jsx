@@ -210,6 +210,25 @@ export function Icon({ name, size = 22, className = '' }) {
           <path d="M15 9 v6" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
         </svg>
       );
+    case 'menu':
+      return (
+        <svg {...p}>
+          <rect x="5" y="5" width="13" height="13" rx="4" fill="#f27ea0" stroke={O} strokeWidth="2.4" />
+          <rect x="22" y="5" width="13" height="13" rx="4" fill="#ffd23f" stroke={O} strokeWidth="2.4" />
+          <rect x="5" y="22" width="13" height="13" rx="4" fill="#6fbfa8" stroke={O} strokeWidth="2.4" />
+          <rect x="22" y="22" width="13" height="13" rx="4" fill="#9fd3e6" stroke={O} strokeWidth="2.4" />
+          <path d="M28.5 25 v7 M25 28.5 h7" stroke={O} strokeWidth="2.4" strokeLinecap="round" />
+        </svg>
+      );
+    case 'wheel':
+      return (
+        <svg {...p}>
+          <circle cx="20" cy="21" r="15" fill="#fff3c4" stroke={O} strokeWidth="2.5" />
+          <path d="M20 21 L20 6 A15 15 0 0 1 33 13.5z M20 21 L33 28.5 A15 15 0 0 1 20 36z M20 21 L7 28.5 A15 15 0 0 1 7 13.5z" fill="#f27ea0" stroke={O} strokeWidth="1.6" />
+          <circle cx="20" cy="21" r="4" fill="#ffd23f" stroke={O} strokeWidth="2" />
+          <path d="M16 2 h8 l-4 6z" fill="#e34f4f" stroke={O} strokeWidth="1.8" strokeLinejoin="round" />
+        </svg>
+      );
     case 'sell':
       return <Icon name="coin" size={size} className={className} />;
     default:

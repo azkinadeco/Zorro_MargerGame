@@ -11,9 +11,11 @@ import { StorageModal, QuestsModal, DailyModal, CodexModal, ShopModal, EnergyMod
 import { Dialogue, Tutorial, FX } from './ui/Overlays';
 import { PetsModal, AlbumModal, HeartReward } from './ui/Pets';
 import { FestivalModal, AchievementsModal } from './ui/Meta';
+import { HubModal } from './ui/Hub';
+import { WheelModal } from './ui/Wheel';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach', 'hub', 'wheel'];
 
 function Title({ onStart, returning }) {
   return (
@@ -268,6 +270,8 @@ function Game({ onReset }) {
           {modal === 'shop' && <ShopModal onClose={() => setModal(null)} />}
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
+          {modal === 'hub' && <HubModal onClose={() => setModal(null)} onNav={nav} />}
+          {modal === 'wheel' && <WheelModal onClose={() => setModal('hub')} />}
           {modal === 'fest' && <FestivalModal onClose={() => setModal(null)} />}
           {modal === 'ach' && <AchievementsModal onClose={() => setModal(null)} />}
           {modal === 'pets' && <PetsModal onClose={() => setModal(null)} onAlbum={() => setModal('album')} />}

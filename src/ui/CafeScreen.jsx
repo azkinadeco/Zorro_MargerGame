@@ -3,7 +3,8 @@ import { AREAS, RESIDENTS, taskXp } from '../game/areas';
 import { useGameCtx, bus } from '../game/useGame';
 import { canClaimDaily } from '../game/engine';
 import { anyPetReady } from './Pets';
-import { festClaimable, achClaimable, FEST_LEVEL } from '../game/meta';
+import { festClaimable, FEST_LEVEL } from '../game/meta';
+import { hubReady } from './Hub';
 import { Icon, Btn, Bar } from './common';
 import { sfx } from '../game/audio';
 
@@ -152,7 +153,6 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
   const tutTask = tutStep === 5 ? area.tasks[0].id : null;
   const dailyReady = canClaimDaily(state);
   const questReady = state.quests?.list.some((q) => q.progress >= q.target && !q.claimed);
-  const codexReady = Object.values(state.discovered).some((v) => v === 1);
 
   return (
     <div className="screen cafe-screen">
@@ -189,23 +189,19 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
           <Icon name="calendar" size={30} />
           {dailyReady && <i className="badge dot">!</i>}
         </button>
-        <button type="button" className="round-btn" onClick={() => onNav('codex')} aria-label="Koleksi resep">
-          <Icon name="book" size={30} />
-          {codexReady && <i className="badge dot">!</i>}
-        </button>
-        <button type="button" className="round-btn" onClick={() => onNav('pets')} aria-label="Teman kucing">
-          <Icon name="cat" size={32} />
-          {anyPetReady(state) && <i className="badge dot">!</i>}
-        </button>
         {state.level >= FEST_LEVEL && (
           <button type="button" className="round-btn fest-btn" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
             <Icon name="tent" size={32} />
             {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
           </button>
         )}
-        <button type="button" className="round-btn" onClick={() => onNav('ach')} aria-label="Prestasi">
-          <Icon name="trophy" size={30} />
-          {achClaimable(state) > 0 && <i className="badge dot">!</i>}
+        <button type="button" className="round-btn" onClick={() => onNav('pets')} aria-label="Teman kucing">
+          <Icon name="cat" size={32} />
+          {anyPetReady(state) && <i className="badge dot">!</i>}
+        </button>
+        <button type="button" className="round-btn hub-btn" onClick={() => onNav('hub')} aria-label="Aktivitas">
+          <Icon name="menu" size={30} />
+          {hubReady(state) && <i className="badge dot">!</i>}
         </button>
         <button type="button" className="round-btn" onClick={() => onNav('settings')} aria-label="Pengaturan">
           <Icon name="gear" size={30} />
