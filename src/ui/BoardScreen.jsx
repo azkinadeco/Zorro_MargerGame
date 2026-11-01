@@ -4,6 +4,7 @@ import { item, nextId } from '../game/items';
 import { useGameCtx } from '../game/useGame';
 import { spawn, move, collect, sell, unsell, store, freeWeb, webCost, popBubble, bubbleCost, findOrderItems, serve, placeGift, canMerge, swapOrder, SWAP_COST } from '../game/engine';
 import { fmtTime } from './common';
+import { festClaimable, FEST_LEVEL } from '../game/meta';
 import { ItemArt, BoxArt, WebArt } from '../art/ItemArt';
 import { CatArt } from '../art/CatArt';
 import { CUSTOMERS } from '../game/config';
@@ -484,6 +485,13 @@ export function BoardScreen({ onNav, tutStep }) {
     <div className="screen board-screen">
       <OrdersBar board={state.board} orders={state.orders} onServe={onServe} onSwap={(uid) => act(swapOrder, uid)} canSwap={state.tut >= 99} />
       <div className="board-wrap" ref={wrapRef}>
+        {state.level >= FEST_LEVEL && (
+          <button type="button" className="fest-float" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
+            <Icon name="tent" size={26} />
+            <span>{state.fest?.pts || 0}</span>
+            {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
+          </button>
+        )}
         <div className="board-frame">
           <Board state={state} act={act} gameRef={gameRef} selected={selected} setSelected={setSelected} cellSize={cellSize} tut={tut} />
         </div>

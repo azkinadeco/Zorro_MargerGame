@@ -10,9 +10,10 @@ import { CafeScreen, TaskSheet } from './ui/CafeScreen';
 import { StorageModal, QuestsModal, DailyModal, CodexModal, ShopModal, EnergyModal, LevelUpModal, LevelInfoModal, TasksModal, SettingsModal } from './ui/Modals';
 import { Dialogue, Tutorial, FX } from './ui/Overlays';
 import { PetsModal, AlbumModal, HeartReward } from './ui/Pets';
+import { FestivalModal, AchievementsModal } from './ui/Meta';
 import { Btn } from './ui/common';
 
-const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album'];
+const MODALS = ['storage', 'quests', 'daily', 'codex', 'shop', 'energy', 'level', 'tasks', 'settings', 'pets', 'album', 'fest', 'ach'];
 
 function Title({ onStart, returning }) {
   return (
@@ -263,6 +264,8 @@ function Game({ onReset }) {
           {modal === 'shop' && <ShopModal onClose={() => setModal(null)} />}
           {modal === 'energy' && <EnergyModal onClose={() => setModal(null)} />}
           {modal === 'level' && <LevelInfoModal onClose={() => setModal(null)} />}
+          {modal === 'fest' && <FestivalModal onClose={() => setModal(null)} />}
+          {modal === 'ach' && <AchievementsModal onClose={() => setModal(null)} />}
           {modal === 'pets' && <PetsModal onClose={() => setModal(null)} onAlbum={() => setModal('album')} />}
           {modal === 'album' && <AlbumModal onClose={() => setModal('pets')} />}
           {modal === 'settings' && <SettingsModal onClose={() => setModal(null)} onReset={onReset} />}

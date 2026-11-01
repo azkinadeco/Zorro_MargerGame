@@ -2399,3 +2399,229 @@ h4 {
 .side-btns .round-btn .ico[viewBox] {
   overflow: visible;
 }
+
+/* ======================================================== v2.2 additions */
+.area-title {
+  cursor: pointer;
+}
+.fest-btn {
+  background: #fff0f5;
+}
+.fest-float {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 10px 2px 4px;
+  border-radius: 16px;
+  border: 2.5px solid var(--ink);
+  background: #fff0f5;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  font: 700 14px var(--font-head);
+}
+.fest-float .badge {
+  top: -8px;
+  right: -8px;
+}
+.board-wrap {
+  position: relative;
+}
+.fest-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fc) 30%, #fff), #fffaf2);
+  border: 2.5px solid var(--fc);
+}
+.fest-head b {
+  display: block;
+  font: 700 18px var(--font-head);
+}
+.fest-head small {
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.fest-art {
+  width: 58px;
+  height: 58px;
+  flex: none;
+  animation: bob 2s ease-in-out infinite;
+}
+.fest-pts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: 700 15px var(--font-head);
+}
+.fest-pts b {
+  font-size: 30px;
+  color: var(--pink-d);
+}
+.fest-next {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.fest-track {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fest-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.fest-step .reward-chips {
+  flex: 1;
+  justify-content: flex-start;
+}
+.fest-step.ready {
+  border-color: var(--pink);
+  background: #fff0f5;
+}
+.fest-step.claimed {
+  opacity: 0.55;
+}
+.fest-step.final {
+  background: #fff3c4;
+}
+.fest-num {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--pink);
+  color: #fff;
+  border: 2.5px solid var(--ink);
+  font: 700 14px var(--font-head);
+}
+.ach-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ach {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.ach.ready {
+  border-color: var(--green);
+  background: #f0faea;
+}
+.ach.done {
+  opacity: 0.6;
+}
+.ach-cups {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ach-cups .dim {
+  filter: grayscale(1) opacity(0.35);
+}
+.ach-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ach-main b {
+  font: 700 15px var(--font-head);
+}
+.ach-main small {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.level-road {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.road-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 2px solid #ead6bd;
+}
+.road-lv {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  flex: none;
+}
+.road-lv b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-top: 2px;
+  font: 700 11px var(--font-head);
+}
+.road-gen {
+  border-color: var(--pink);
+}
+.backup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2.5px solid #ead6bd;
+}
+.backup b {
+  font: 700 16px var(--font-head);
+}
+.backup p {
+  margin: 0;
+}
+.backup-btns {
+  display: flex;
+  gap: 8px;
+}
+.backup-btns .btn {
+  flex: 1;
+}
+.backup-text {
+  width: 100%;
+  height: 72px;
+  resize: none;
+  border-radius: 10px;
+  border: 2px solid #ead6bd;
+  padding: 6px;
+  font: 600 11px/1.3 monospace;
+  color: var(--ink);
+  background: #fff;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.backup-msg {
+  margin: 0;
+  font-weight: 800;
+  color: var(--blue-d);
+}

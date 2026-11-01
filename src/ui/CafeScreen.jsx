@@ -3,6 +3,7 @@ import { AREAS, RESIDENTS, taskXp } from '../game/areas';
 import { useGameCtx, bus } from '../game/useGame';
 import { canClaimDaily } from '../game/engine';
 import { anyPetReady } from './Pets';
+import { festClaimable, achClaimable, FEST_LEVEL } from '../game/meta';
 import { Icon, Btn, Bar } from './common';
 import { sfx } from '../game/audio';
 
@@ -159,7 +160,7 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
         <button type="button" className="area-arrow" disabled={ai <= 0} onClick={() => (sfx('tap'), setViewArea(ai - 1))} aria-label="Area sebelumnya">
           <Icon name="arrowL" size={22} />
         </button>
-        <div className="area-title">
+        <div className="area-title" role="button" onClick={() => onNav('tasks')}>
           <b>{area.name}</b>
           <div className="area-prog">
             <Bar value={done.length} max={area.tasks.length} />
@@ -196,8 +197,15 @@ export function CafeScreen({ onNav, onTask, tutStep, viewArea, setViewArea }) {
           <Icon name="cat" size={32} />
           {anyPetReady(state) && <i className="badge dot">!</i>}
         </button>
-        <button type="button" className="round-btn" onClick={() => onNav('tasks')} aria-label="Daftar renovasi">
-          <Icon name="star" size={30} />
+        {state.level >= FEST_LEVEL && (
+          <button type="button" className="round-btn fest-btn" data-hud="fest" onClick={() => onNav('fest')} aria-label="Festival">
+            <Icon name="tent" size={32} />
+            {festClaimable(state) > 0 && <i className="badge">{festClaimable(state)}</i>}
+          </button>
+        )}
+        <button type="button" className="round-btn" onClick={() => onNav('ach')} aria-label="Prestasi">
+          <Icon name="trophy" size={30} />
+          {achClaimable(state) > 0 && <i className="badge dot">!</i>}
         </button>
         <button type="button" className="round-btn" onClick={() => onNav('settings')} aria-label="Pengaturan">
           <Icon name="gear" size={30} />

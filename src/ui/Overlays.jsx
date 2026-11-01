@@ -103,7 +103,7 @@ export function Tutorial({ target, text, dragTo, pos, soft }) {
 
 // ---------------------------------------------------------------------- fx
 let fxId = 1;
-const HUD_ICON = { coins: 'coin', gems: 'gem', energy: 'energy', xp: 'xp' };
+const HUD_ICON = { coins: 'coin', gems: 'gem', energy: 'energy', xp: 'xp', fest: 'tent' };
 
 function rectOf(sel) {
   const el = document.querySelector(sel);
@@ -233,7 +233,7 @@ export function FX() {
       } else if (t === 'task') {
         setBursts((x) => [...x, { id: fxId++, x: window.innerWidth / 2, y: window.innerHeight * 0.45, big: true }]);
       } else if (t === 'toast') {
-        addToast({ text: d.text });
+        addToast({ text: d.text, item: d.item });
       } else if (t === 'discover') {
         addToast({ text: `Resep baru: ${item(d.id).name}!`, item: d.id });
       } else if (t === 'needGems') {

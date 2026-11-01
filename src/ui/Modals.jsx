@@ -21,6 +21,8 @@ import {
   claimLevel,
 } from '../game/engine';
 import { useNow } from './TopBar';
+import { BackupPanel } from './Meta';
+import { levelRewards } from '../game/config';
 import { sfx } from '../game/audio';
 
 // ---------------------------------------------------------------- storage
@@ -326,6 +328,33 @@ export function LevelInfoModal({ onClose }) {
           {state.xp}/{xpForLevel(state.level)} XP menuju level {state.level + 1}
         </p>
         <p className="muted center small">Dapatkan XP dengan menyajikan pesanan dan merenovasi kafe.</p>
+        <h4>Hadiah level berikutnya</h4>
+        <div className="level-road">
+          {[1, 2, 3, 4, 5].map((k) => {
+            const lv = state.level + k;
+            const r = levelRewards(lv);
+            const un = Object.entries(CHAINS).find(([, c]) => c.unlock === lv);
+            return (
+              <div key={lv} className="road-step">
+                <span className="road-lv">
+                  <Icon name="star" size={30} />
+                  <b>{lv}</b>
+                </span>
+                <RewardChips r={{ gems: r.gems, energy: r.energy }} />
+                {r.items.map((id, i) => (
+                  <span key={i} className="chip chip-item">
+                    <ItemArt id={id} />
+                  </span>
+                ))}
+                {un && (
+                  <span className="chip chip-item road-gen" title={GENERATORS[un[0]].name}>
+                    <ItemArt id={`gen${un[0]}_1`} />
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
         {upcoming.length > 0 && (
           <div className="upcoming">
             {upcoming.map(([k, c]) => (
@@ -442,7 +471,8 @@ export function SettingsModal({ onClose, onReset }) {
             </Btn>
           </div>
         )}
-        <p className="muted small center">Kafe Kucing Zorro · v2.0 · progres tersimpan otomatis di perangkat ini</p>
+        <BackupPanel onRestored={onReset} />
+        <p className="muted small center">Kafe Kucing Zorro · v2.2 · progres tersimpan otomatis di perangkat ini</p>
       </div>
     </Modal>
   );

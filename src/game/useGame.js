@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { newGame, tick, ensureGenerators, ensurePets } from './engine';
+import { newGame, tick, ensureGenerators, ensurePets, ensureAreaIdx } from './engine';
 import { dayKey } from './quests';
 import { ENERGY_MAX, ENERGY_REGEN_MS } from './config';
 
@@ -31,6 +31,7 @@ export function loadGame() {
     s.shop = { ...fresh.shop, ...s.shop };
     ensureGenerators(s);
     ensurePets(s);
+    ensureAreaIdx(s);
     return s;
   } catch {
     return null;

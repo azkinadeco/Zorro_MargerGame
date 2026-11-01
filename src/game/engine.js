@@ -6,6 +6,7 @@ import { VIP_MS, COLS, ROWS, CELLS, ENERGY_MAX, ENERGY_REGEN_MS, STORAGE_START, 
 import { item, nextId, rollGeneratorOutput, CHAINS, GENERATORS } from './items';
 import { makeOrder, scriptedOrder, SCRIPTED_ORDERS, unlockedChains, maxTierFor } from './orders';
 import { PETS, heartsFor, MAX_HEARTS } from './pets';
+import { ensureFest, FEST_TRACK, FEST_LEVEL, ACHIEVEMENTS, ACH_GEMS, achState } from './meta';
 import { AREAS, taskXp } from './areas';
 import { makeDailyQuests, dayKey, DAILY_REWARDS, seededRng } from './quests';
 
@@ -98,6 +99,8 @@ export function newGame() {
     seen: {},
     pendingLevel: [],
     pets: {},
+    fest: null,
+    ach: {},
   };
   for (const cell of s.board) if (cell && cell.st !== 'box') s.discovered[cell.id] ??= 1;
   fillOrders(s);
@@ -209,7 +212,15 @@ export function tick(s, now, emit) {
   refreshDay(s);
 }
 
+function festPoints(s, n, emit, from) {
+  ensureFest(s);
+  if (s.level < FEST_LEVEL || n <= 0) return;
+  s.fest.pts += n;
+  emit('gain', { kind: 'fest', amount: n, from });
+}
+
 function refreshDay(s) {
+  ensureFest(s);
   const day = dayKey();
   if (!s.quests || s.quests.day !== day) s.quests = { day, list: makeDailyQuests(day, s.level) };
   if (s.shop.day !== day) {
@@ -484,6 +495,8 @@ export function serve(s, orderUid, emit) {
   for (const i of cells) s.board[i] = null;
   s.orders.splice(oi, 1);
   s.stats.served++;
+  if (o.vip) s.stats.vip = (s.stats.vip || 0) + 1;
+  festPoints(s, 1 + o.items.length + (o.vip ? 3 : 0), emit, { order: o.uid });
   questProgress(s, 'serve');
   giveCurrency(s, { coins: o.coins, xp: o.xp, gems: o.gems || 0 }, emit, { order: o.uid });
   if (o.bonus) s.gifts.push(o.bonus);
@@ -568,6 +581,11 @@ export function petMaxed(s, cat) {
   return heartsFor(s.pets?.[cat]?.pts || 0) >= MAX_HEARTS;
 }
 
+// Old saves: move past areas finished before new areas were added
+export function ensureAreaIdx(s) {
+  while (s.areaIdx < AREAS.length - 1 && (s.areas[AREAS[s.areaIdx].id] || []).length >= AREAS[s.areaIdx].tasks.length) s.areaIdx++;
+}
+
 // Old saves or reordered unlocks: every unlocked chain must own a generator
 export function ensureGenerators(s) {
   const owned = new Set();
@@ -600,6 +618,7 @@ export function doTask(s, ai, taskId, emit) {
   s.coins -= t.cost;
   done.push(taskId);
   emit('task', { area: a.id, task: t });
+  festPoints(s, 2, emit);
   addXp(s, taskXp(t.cost), emit, { task: taskId });
   if (done.length === a.tasks.length) {
     const rew = a.reward;
@@ -663,6 +682,28 @@ export function claimCodex(s, id, emit) {
   s.discovered[id] = 2;
   const gems = Math.max(1, Math.ceil(it.tier / 2));
   giveCurrency(s, { gems }, emit);
+  return true;
+}
+
+export function claimFest(s, i, emit) {
+  ensureFest(s);
+  const m = FEST_TRACK[i];
+  if (!m || s.fest.claimed.includes(i) || s.fest.pts < m.pts) return false;
+  s.fest.claimed.push(i);
+  s.stats.festClaims = (s.stats.festClaims || 0) + 1;
+  giveCurrency(s, m.r, emit);
+  if (m.r.item) emit('toast', { text: 'Hadiah masuk ke tombol Hadiah di papan!', item: m.r.item });
+  return true;
+}
+
+export function claimAch(s, id, emit) {
+  const a = ACHIEVEMENTS.find((x) => x.id === id);
+  if (!a) return false;
+  const st = achState(s, a);
+  if (!st.ready) return false;
+  s.ach ||= {};
+  s.ach[id] = st.tier + 1;
+  giveCurrency(s, { gems: ACH_GEMS[st.tier] }, emit);
   return true;
 }
 
